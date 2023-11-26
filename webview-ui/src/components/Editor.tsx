@@ -6,7 +6,7 @@ import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useSteps } from "../Store";
 import { DragList } from "../Types";
 import { useDisclosure } from "@mantine/hooks";
-import ExportDrawer from "./ExportDrawer";
+import SaveDrawer from "./SaveDrawer";
 
 export function Editor() {
   const { addStepFromAction, reorderStep } = useSteps();
@@ -32,7 +32,7 @@ export function Editor() {
       sx={(theme) => ({
         backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : "#f4f9fd",
       })}>
-      <ExportDrawer opened={exportDrawerOpened} onClose={setExportDrawerOpened.close} />
+      <SaveDrawer opened={exportDrawerOpened} onClose={setExportDrawerOpened.close} />
       <Container size="100rem" h="calc(100vh - 20px)" pt={20}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Grid grow justify="center">

@@ -13,7 +13,15 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { IconCopy, IconDots, IconDragDrop, IconFileExport, IconTrash } from "@tabler/icons-react";
+import {
+  IconAdjustmentsHorizontal,
+  IconCopy,
+  IconDeviceFloppy,
+  IconDots,
+  IconDragDrop,
+  IconPlayerPlayFilled,
+  IconTrash,
+} from "@tabler/icons-react";
 import useStyles from "../CustomStyles";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { DragList, StepItem } from "../Types";
@@ -24,7 +32,7 @@ interface TestCaseSectionProps {
   onExportClick: () => void;
 }
 
-function TestCaseSection({ onExportClick }: TestCaseSectionProps) {
+function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
   const [deleteStepModelOpened, setDeleteStepModel] = useDisclosure(false);
   const { classes } = useStyles();
   const { steps, selectStep, getSelectedStep, duplicateStep, deleteStep } = useSteps();
@@ -52,7 +60,10 @@ function TestCaseSection({ onExportClick }: TestCaseSectionProps) {
 
   return (
     <>
-      <Modal opened={deleteStepModelOpened} onClose={setDeleteStepModel.close} title="Delete step">
+      <Modal
+        opened={deleteStepModelOpened}
+        onClose={setDeleteStepModel.close}
+        title={<Text>Delete step</Text>}>
         <Text>Are you sure you want to delete this step?</Text>
         <Group mt="lg" spacing="xs" position="right">
           <Button
@@ -70,15 +81,29 @@ function TestCaseSection({ onExportClick }: TestCaseSectionProps) {
       <Card shadow="none" withBorder radius="md" h="calc(100vh - 40px)" p="md">
         <Card.Section p="lg">
           <Group position="apart">
-            <Text fw={500}>TestCase Steps</Text>
+            <Group>
+              <Text fw={500}>TestCase Steps</Text>
+              <ActionIcon onClick={() => {}} size="lg">
+                <IconAdjustmentsHorizontal size="1.2rem" />
+              </ActionIcon>
+            </Group>
             {steps.length > 0 && (
-              <Button
-                variant="light"
-                leftIcon={<IconFileExport size={14} />}
-                color="blue"
-                onClick={onExportClick}>
-                Export
-              </Button>
+              <Group>
+                <Button
+                  variant="light"
+                  leftIcon={<IconDeviceFloppy size={14} />}
+                  color="blue"
+                  onClick={onSaveClick}>
+                  Save
+                </Button>
+                <Button
+                  variant="light"
+                  leftIcon={<IconPlayerPlayFilled size={14} />}
+                  color="green"
+                  onClick={() => {}}>
+                  Run
+                </Button>
+              </Group>
             )}
           </Group>
         </Card.Section>

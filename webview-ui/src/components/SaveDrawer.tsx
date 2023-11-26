@@ -1,4 +1,4 @@
-import { Box, Button, Drawer, Stack, TextInput, Textarea, rem } from "@mantine/core";
+import { Box, Button, Drawer, Stack, Text, TextInput, Textarea, rem } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconDownload } from "@tabler/icons-react";
 import { useSteps } from "../Store";
@@ -6,12 +6,12 @@ import { useState } from "react";
 
 const tempFilename = "testcase-" + new Date().getTime();
 
-export interface ExportDrawerProps {
+export interface SaveDrawerProps {
   opened: boolean;
   onClose: () => void;
 }
 
-function ExportDrawer({ opened, onClose }: ExportDrawerProps) {
+function SaveDrawer({ opened, onClose }: SaveDrawerProps) {
   const [title, setTitle] = useState("");
   const [filename, setFilename] = useState(tempFilename);
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ function ExportDrawer({ opened, onClose }: ExportDrawerProps) {
   }
 
   return (
-    <Drawer opened={opened} onClose={onClose} title="Export testcase" position="right">
+    <Drawer opened={opened} onClose={onClose} title={<Text>Save Testcase</Text>} position="right">
       <Stack>
         <Textarea
           placeholder="testcase title"
@@ -75,19 +75,18 @@ function ExportDrawer({ opened, onClose }: ExportDrawerProps) {
         />
         <Button
           mt="sm"
-          leftIcon={<IconDownload size={14} />}
           color="green"
           disabled={filename === "" || title === ""}
           onClick={handelDownload}
           loading={loading}>
-          Download
+          Save
         </Button>
       </Stack>
     </Drawer>
   );
 }
 
-export default ExportDrawer;
+export default SaveDrawer;
 function JsonFileText() {
   return (
     <Box
