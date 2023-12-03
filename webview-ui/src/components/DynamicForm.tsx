@@ -18,10 +18,11 @@ import { useSteps } from "../Store";
 interface DynamicFormProps {
   id: string;
   actionInputType: ActionInputType;
-  onChange: (fields: Field[]) => void;
+  onChange?: (fields: Field[]) => void;
+  readonly?: boolean;
 }
 
-function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
+function DynamicForm({ id, actionInputType, onChange, readonly }: DynamicFormProps) {
   const [formValues, setFormValues] = useState<Field[]>([]);
   const [hasError, setHasError] = useState<boolean>(false);
   const { getStepActionInput } = useSteps();
@@ -51,6 +52,8 @@ function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
 
   function handelOnSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (readonly || !onChange) return;
+
     if (!formValues || formValues.length === 0) return;
 
     const hasEmptyFields = formValues.some((field) => field.required && field.value === "");
@@ -75,6 +78,7 @@ function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
                 label={field.label}
                 type="text"
                 mb="md"
+                readOnly={readonly}
                 value={field.value}
                 withAsterisk={field.required}
                 onChange={(event) => handleChange(field.label, event.currentTarget.value)}
@@ -88,6 +92,7 @@ function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
                 mb="md"
                 autosize={true}
                 minRows={4}
+                readOnly={readonly}
                 label={field.label}
                 value={field.value}
                 withAsterisk={field.required}
@@ -105,6 +110,7 @@ function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
                 formatOnBlur
                 autosize={true}
                 minRows={4}
+                readOnly={readonly}
                 label={field.label}
                 value={field.value}
                 withAsterisk={field.required}
@@ -117,6 +123,7 @@ function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
                 key={index}
                 description={field.description}
                 mb="md"
+                readOnly={readonly}
                 label={field.label}
                 value={field.value}
                 withAsterisk={field.required}
@@ -129,11 +136,13 @@ function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
                 key={index}
                 description={field.description}
                 mb="md"
+                readOnly={readonly}
                 label={field.label}
                 checked={field.value == "true"}
-                onChange={(event) =>
-                  handleChange(field.label, event.currentTarget.checked ? "true" : "false")
-                }
+                onChange={(event) => {
+                  if (readonly) return;
+                  handleChange(field.label, event.currentTarget.checked ? "true" : "false");
+                }}
               />
             );
           default:
@@ -152,10 +161,11 @@ function DynamicForm({ id, actionInputType, onChange }: DynamicFormProps) {
           Please fill all required fields before submitting.
         </Alert>
       )}
-
-      <Button fullWidth variant="outline" type="submit">
-        Update
-      </Button>
+      {!readonly && (
+        <Button fullWidth variant="outline" type="submit">
+          Update
+        </Button>
+      )}
     </form>
   );
 }

@@ -2,12 +2,13 @@ import "./App.css";
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import Editor from "./components/Editor";
-import AppHeader from "./components/AppHeader";
 import { useState } from "react";
-import AppFooter from "./components/AppFooter";
+import { useSteps } from "./Store";
+import Player from "./components/Player";
 
 function App() {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
+  const { isTestRunning } = useSteps();
   const toggleColorScheme = (value?: ColorScheme) => {
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
   };
@@ -16,8 +17,8 @@ function App() {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={{ colorScheme }}>
         <Notifications position="top-right" />
-        {/* <AppHeader /> */}
-        <Editor />
+        {!isTestRunning && <Editor />}
+        {isTestRunning && <Player />}
       </MantineProvider>
     </ColorSchemeProvider>
   );

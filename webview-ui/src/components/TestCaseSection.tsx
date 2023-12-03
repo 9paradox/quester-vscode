@@ -17,7 +17,7 @@ import {
   IconAdjustmentsHorizontal,
   IconCopy,
   IconDeviceFloppy,
-  IconDots,
+  IconDotsVertical,
   IconDragDrop,
   IconPlayerPlayFilled,
   IconTrash,
@@ -35,7 +35,15 @@ interface TestCaseSectionProps {
 function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
   const [deleteStepModelOpened, setDeleteStepModel] = useDisclosure(false);
   const { classes } = useStyles();
-  const { steps, selectStep, getSelectedStep, duplicateStep, deleteStep } = useSteps();
+  const {
+    steps,
+    selectStep,
+    getSelectedStep,
+    duplicateStep,
+    deleteStep,
+    isTestRunning,
+    runTest,
+  } = useSteps();
 
   function handelDeleteStep() {
     const selectedStep = getSelectedStep();
@@ -89,20 +97,24 @@ function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
             </Group>
             {steps.length > 0 && (
               <Group>
-                <Button
-                  variant="light"
-                  leftIcon={<IconDeviceFloppy size={14} />}
-                  color="blue"
-                  onClick={onSaveClick}>
-                  Save
-                </Button>
-                <Button
-                  variant="light"
-                  leftIcon={<IconPlayerPlayFilled size={14} />}
-                  color="green"
-                  onClick={() => {}}>
-                  Run
-                </Button>
+                {!isTestRunning && (
+                  <Button
+                    variant="light"
+                    leftIcon={<IconDeviceFloppy size={14} />}
+                    color="blue"
+                    onClick={onSaveClick}>
+                    Save
+                  </Button>
+                )}
+                {!isTestRunning && (
+                  <Button
+                    variant="light"
+                    leftIcon={<IconPlayerPlayFilled size={14} />}
+                    color="green"
+                    onClick={runTest}>
+                    Run
+                  </Button>
+                )}
               </Group>
             )}
           </Group>
@@ -169,27 +181,18 @@ function StepCard({ index, step, onCardClick, onMenuItemClick }: StepCardProps) 
             boxShadow: step.selected ? `inset 0 0 0px 2px ${theme.colors.blue[3]}` : "",
             overflow: "visible",
           })}>
-          <Flex
-            mih={50}
-            gap="md"
-            justify="space-between"
-            align="center"
-            direction="row"
-            wrap="nowrap">
+          <Flex mih={50} gap="md" align="center" direction="row" wrap="nowrap">
             <Avatar size={48} radius="lg" color={step.selected ? "blue.6" : "gray.6"} m={16}>
               #{index + 1}
             </Avatar>
-            <Stack
-              align="flex-start"
-              justify="flex-start"
-              spacing="sm"
-              maw="70%"
-              style={{ marginRight: "auto" }}>
-              <Text fw={500}>{step.actionItem.name}</Text>
-              <Badge color={step.actionItem.color} variant="light" size="xs" mb="auto">
-                {step.actionItem.type}
-              </Badge>
-              <Text fz="xs" color="dimmed">
+            <Stack spacing="sm" style={{ marginRight: "auto" }}>
+              <Group>
+                <Text fw={500}>{step.actionItem.name}</Text>
+                <Badge color={step.actionItem.color} variant="light" size="xs">
+                  {step.actionItem.type}
+                </Badge>
+              </Group>
+              <Text fz="xs" color="dimmed" w="100%">
                 {step.actionItem.description}
               </Text>
             </Stack>
@@ -209,7 +212,7 @@ function StepMenu({ onMenuItemClick }: StepMenuProps) {
     <Menu shadow="md" width={200}>
       <Menu.Target>
         <ActionIcon>
-          <IconDots size="1.125rem" />
+          <IconDotsVertical size="1.125rem" />
         </ActionIcon>
       </Menu.Target>
 

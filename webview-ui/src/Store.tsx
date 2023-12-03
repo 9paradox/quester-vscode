@@ -10,9 +10,12 @@ export const ActionsStore = atom((get) => get(actions));
 
 const StepsStore = atom<StepItem[]>([]);
 
+const IsTestRunningStore = atom<boolean>(false);
+
 export const useSteps = () => {
   const [steps, setSteps] = useAtom(StepsStore);
   const [actions] = useAtom(ActionsStore);
+  const [isTestRunning, setIsTestRunning] = useAtom(IsTestRunningStore);
 
   function addStepFromAction(actionIndex: number, destinationIndex: number) {
     const action = actions[actionIndex];
@@ -214,6 +217,16 @@ export const useSteps = () => {
     return jsonTestcase;
   }
 
+  function runTest() {
+    if (isTestRunning) return;
+    setIsTestRunning(true);
+  }
+
+  function stopTest() {
+    if (!isTestRunning) return;
+    setIsTestRunning(false);
+  }
+
   return {
     steps,
     addStepFromAction,
@@ -225,5 +238,8 @@ export const useSteps = () => {
     updateStepActionInput,
     getStepActionInput,
     buildJsonTestcase,
+    isTestRunning,
+    runTest,
+    stopTest,
   };
 };

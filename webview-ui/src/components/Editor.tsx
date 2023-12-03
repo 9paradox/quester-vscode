@@ -9,7 +9,7 @@ import { useDisclosure } from "@mantine/hooks";
 import SaveDrawer from "./SaveDrawer";
 
 export function Editor() {
-  const { addStepFromAction, reorderStep } = useSteps();
+  const { addStepFromAction, reorderStep, isTestRunning } = useSteps();
   const [exportDrawerOpened, setExportDrawerOpened] = useDisclosure(false);
 
   const onDragEnd = ({ source, destination }: DropResult) => {
@@ -36,9 +36,11 @@ export function Editor() {
       <Container size="100rem" h="calc(100vh - 20px)" pt={20}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Grid grow justify="center">
-            <Grid.Col span={1} style={{ minHeight: rem(10) }}>
-              <ActionSection />
-            </Grid.Col>
+            {!isTestRunning && (
+              <Grid.Col span={1} style={{ minHeight: rem(80) }}>
+                <ActionSection />
+              </Grid.Col>
+            )}
             <Grid.Col span={3} style={{ minHeight: rem(120) }}>
               <TestCaseSection onExportClick={setExportDrawerOpened.open} />
             </Grid.Col>
