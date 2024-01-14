@@ -6,17 +6,15 @@ import { useSteps } from "../Store";
 import { useState, useEffect } from "react";
 
 function StepInputSection() {
-  const { getSelectedStep } = useSteps();
+  const { selectedStep } = useSteps();
 
   const [optionTab, setOptionTab] = useState<ActionInputType>(ActionInputType.simple);
 
-  const selectedStep = getSelectedStep();
-
   useEffect(() => {
-    if (!selectedStep?.selectedActionInput || selectedStep?.selectedActionInput != optionTab) {
-      setOptionTab(selectedStep?.selectedActionInput ?? ActionInputType.simple);
+    if (!selectedStep?.step?.selectedActionInput || selectedStep?.step?.selectedActionInput != optionTab) {
+      setOptionTab(selectedStep?.step?.selectedActionInput ?? ActionInputType.simple);
     }
-  }, [selectedStep?.selectedActionInput]);
+  }, [selectedStep?.step?.selectedActionInput]);
 
   return (
     <Card shadow="none" withBorder radius="md" h="calc(100vh - 40px)" p="md">
@@ -47,15 +45,13 @@ interface StepOptionFormProps {
   actionInputType: ActionInputType;
 }
 function StepOptionForm({ actionInputType }: StepOptionFormProps) {
-  const { getSelectedStep } = useSteps();
-
-  const selectedStep = getSelectedStep();
+  const { selectedStep } = useSteps();
 
   if (!selectedStep) return <NoStepSelected />;
 
   return (
     <Stack p="md">
-      <DynamicForm actionInputType={actionInputType} id={selectedStep.id} readonly={true} />
+      <DynamicForm actionInputType={actionInputType} id={selectedStep?.step?.id} readonly={true} />
     </Stack>
   );
 }

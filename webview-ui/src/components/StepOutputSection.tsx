@@ -1,8 +1,10 @@
 import { Card, ScrollArea, Text, Stack, Center, Group, Textarea } from "@mantine/core";
 import { useSteps } from "../Store";
+import { IconClick } from "@tabler/icons-react";
 
 function StepOutputSection() {
-  const { stepResults } = useSteps();
+  const { stepResults, selectedStep } = useSteps();
+  const selectedStepResult = selectedStep ? stepResults[selectedStep.index] : undefined;
   return (
     <Card shadow="none" withBorder radius="md" h="calc(100vh - 40px)" p="md">
       <Card.Section p="lg">
@@ -21,21 +23,37 @@ function StepOutputSection() {
             theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[0],
           borderRadius: theme.radius.md,
         })}>
-        {stepResults.map((step, index) => {
-          return (
-            <Textarea
-              key={index}
-              m="md"
-              autosize={true}
-              minRows={4}
-              readOnly={true}
-              label={step.name}
-              value={step.text}
-            />
-          );
-        })}
+        {!selectedStep && <NoStepSelected />}
+        {selectedStep && selectedStepResult && (
+          <Textarea
+            m="md"
+            autosize={true}
+            minRows={4}
+            readOnly={true}
+            label={selectedStepResult?.name}
+            value={selectedStepResult?.text}
+          />
+        )}
       </ScrollArea>
     </Card>
+  );
+}
+
+function NoStepSelected() {
+  return (
+    <Center
+      h="calc(100vh - 500px)"
+      sx={() => ({
+        margin: "20px",
+        padding: "20px",
+      })}>
+      <Stack align="center">
+        <IconClick color="gray" size={40} />
+        <Text size="sm" color="dimmed" inline mt={7}>
+          Please select a step to view result
+        </Text>
+      </Stack>
+    </Center>
   );
 }
 

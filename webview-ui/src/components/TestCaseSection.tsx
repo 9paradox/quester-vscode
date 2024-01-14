@@ -35,30 +35,21 @@ interface TestCaseSectionProps {
 function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
   const [deleteStepModelOpened, setDeleteStepModel] = useDisclosure(false);
   const { classes } = useStyles();
-  const {
-    steps,
-    selectStep,
-    getSelectedStep,
-    duplicateStep,
-    deleteStep,
-    isTestRunning,
-    runTest,
-  } = useSteps();
+  const { steps, selectStep, selectedStep, duplicateStep, deleteStep, isTestRunning, runTest } =
+    useSteps();
 
   function handelDeleteStep() {
-    const selectedStep = getSelectedStep();
     if (selectedStep == null) return;
-    deleteStep(selectedStep);
+    deleteStep(selectedStep.step);
     setDeleteStepModel.close();
   }
 
   function handleMenuClick(action: string) {
-    const selectedStep = getSelectedStep();
     if (selectedStep == null) return;
 
     switch (action) {
       case "clone":
-        duplicateStep(selectedStep);
+        duplicateStep(selectedStep.step);
         break;
       case "delete":
         setDeleteStepModel.open();

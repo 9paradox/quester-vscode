@@ -16,6 +16,7 @@ const StepResultStore = atom<{ name: string; text: string }[]>([]);
 
 const IsTestRunningStore = atom<boolean>(false);
 const IsTestCompletedStore = atom<boolean>(false);
+const SelectedStep = atom<{ step: StepItem; index: number } | undefined>(undefined);
 
 export const useSteps = () => {
   const [steps, setSteps] = useAtom(StepsStore);
@@ -23,6 +24,7 @@ export const useSteps = () => {
   const [actions] = useAtom(ActionsStore);
   const [isTestRunning, setIsTestRunning] = useAtom(IsTestRunningStore);
   const [isTestCompleted, setIsTestCompleted] = useAtom(IsTestCompletedStore);
+  const [selectedStep, setSelectedStep] = useAtom(SelectedStep);
 
   useEffect(() => {
     window.addEventListener("message", (event) => {
@@ -139,14 +141,17 @@ export const useSteps = () => {
     });
 
     setSteps(unselectedSteps);
+    var selectedStepObj = undefined;
 
-    const newSteps = steps.map((s) => {
+    const newSteps = steps.map((s, i) => {
       if (s.id === step.id) {
         s.selected = !s.selected;
+        selectedStepObj = { step: s, index: i };
       }
       return s;
     });
     setSteps([...newSteps]);
+    setSelectedStep(selectedStepObj);
   }
 
   function duplicateStep(step: StepItem) {
@@ -167,49 +172,47 @@ export const useSteps = () => {
     setSteps([...newSteps]);
   }
 
-  function getSelectedStep() {
-    return steps.find((s) => s.selected);
-  }
-
   function updateStepActionInput(values: Field[], actionInputType: ActionInputType) {
-    const selectedStep = getSelectedStep();
-    const newSelectedStep = { ...selectedStep } as StepItem;
+    if (!selectedStep) return;
+    const updatedStep = { ...selectedStep.step } as StepItem;
 
-    newSelectedStep.selectedActionInput = actionInputType;
+    updatedStep.selectedActionInput = actionInputType;
 
     if (!values) return;
 
-    if (!newSelectedStep.actionInput) return;
+    if (!updatedStep.actionInput) return;
 
     if (actionInputType == ActionInputType.simple) {
-      newSelectedStep.actionInput.inputDataSimple = [...values];
+      updatedStep.actionInput.inputDataSimple = [...values];
     } else if (actionInputType == ActionInputType.advance) {
-      newSelectedStep.actionInput.inputDataAdvance = [...values];
+      updatedStep.actionInput.inputDataAdvance = [...values];
     } else if (actionInputType == ActionInputType.raw) {
-      newSelectedStep.actionInput.inputDataRaw = [...values];
+      updatedStep.actionInput.inputDataRaw = [...values];
     }
 
     const newSteps = steps.map((s) => {
-      if (s.id === newSelectedStep.id) {
-        return newSelectedStep;
+      if (s.id === updatedStep.id) {
+        return updatedStep;
       }
       return s;
     });
+    var newSelectedStep = { ...selectedStep };
+    newSelectedStep.step = updatedStep;
+    setSelectedStep(newSelectedStep);
     setSteps(newSteps);
   }
 
   function getStepActionInput(actionInputType: ActionInputType): Field[] {
-    const selectedStep = getSelectedStep();
     if (!selectedStep) return [];
 
     let actionInputs: Field[] = [];
 
     if (actionInputType == ActionInputType.simple) {
-      actionInputs = selectedStep.actionInput?.inputDataSimple ?? [];
+      actionInputs = selectedStep?.step.actionInput?.inputDataSimple ?? [];
     } else if (actionInputType == ActionInputType.advance) {
-      actionInputs = selectedStep.actionInput?.inputDataAdvance ?? [];
+      actionInputs = selectedStep?.step.actionInput?.inputDataAdvance ?? [];
     } else if (actionInputType == ActionInputType.raw) {
-      actionInputs = selectedStep.actionInput?.inputDataRaw ?? [];
+      actionInputs = selectedStep?.step.actionInput?.inputDataRaw ?? [];
     }
 
     return actionInputs;
@@ -290,6 +293,7 @@ export const useSteps = () => {
     const finalSteps: Step[] = [];
 
     steps.forEach((step) => {
+      //todo: validate and stop if invalid
       const stepItem: Step = {
         action: step.action,
         inputData: buildStep(step),
@@ -310,7 +314,7 @@ export const useSteps = () => {
     addStepFromAction,
     reorderStep,
     selectStep,
-    getSelectedStep,
+    selectedStep,
     duplicateStep,
     deleteStep,
     updateStepActionInput,

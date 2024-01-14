@@ -6,17 +6,18 @@ import { useSteps } from "../Store";
 import { useState, useEffect } from "react";
 
 function StepOptionSection() {
-  const { getSelectedStep } = useSteps();
+  const { selectedStep } = useSteps();
 
   const [optionTab, setOptionTab] = useState<ActionInputType>(ActionInputType.simple);
 
-  const selectedStep = getSelectedStep();
-
   useEffect(() => {
-    if (!selectedStep?.selectedActionInput || selectedStep?.selectedActionInput != optionTab) {
-      setOptionTab(selectedStep?.selectedActionInput ?? ActionInputType.simple);
+    if (
+      !selectedStep?.step?.selectedActionInput ||
+      selectedStep?.step?.selectedActionInput != optionTab
+    ) {
+      setOptionTab(selectedStep?.step?.selectedActionInput ?? ActionInputType.simple);
     }
-  }, [selectedStep?.selectedActionInput]);
+  }, [selectedStep?.step?.selectedActionInput]);
 
   function handleOptionChange(value: ActionInputType) {
     setOptionTab(value);
@@ -37,33 +38,33 @@ function StepOptionSection() {
         data={[
           {
             label:
-              selectedStep?.selectedActionInput == ActionInputType.simple ? (
+              selectedStep?.step?.selectedActionInput == ActionInputType.simple ? (
                 <TabName name="Simple" />
               ) : (
                 "Simple"
               ),
             value: ActionInputType.simple,
-            disabled: !selectedStep?.actionInput?.inputDataSimple,
+            disabled: !selectedStep?.step?.actionInput?.inputDataSimple,
           },
           {
             label:
-              selectedStep?.selectedActionInput == ActionInputType.advance ? (
+              selectedStep?.step?.selectedActionInput == ActionInputType.advance ? (
                 <TabName name="Advance" />
               ) : (
                 "Advance"
               ),
             value: ActionInputType.advance,
-            disabled: !selectedStep?.actionInput?.inputDataAdvance,
+            disabled: !selectedStep?.step?.actionInput?.inputDataAdvance,
           },
           {
             label:
-              selectedStep?.selectedActionInput == ActionInputType.raw ? (
+              selectedStep?.step?.selectedActionInput == ActionInputType.raw ? (
                 <TabName name="Raw" />
               ) : (
                 "Raw"
               ),
             value: ActionInputType.raw,
-            disabled: !selectedStep?.actionInput?.inputDataRaw,
+            disabled: !selectedStep?.step?.actionInput?.inputDataRaw,
           },
         ]}
         value={optionTab}
@@ -80,7 +81,7 @@ function StepOptionSection() {
             theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[0],
           borderRadius: theme.radius.md,
         })}>
-        <StepOptionForm actionInputType={optionTab} />
+        <StepOptionForm actionInputType={optionTab} onSubmit={handleOptionChange} />
       </ScrollArea>
     </Card>
   );
@@ -100,15 +101,15 @@ function TabName({ name }: TabNameProps) {
 
 interface StepOptionFormProps {
   actionInputType: ActionInputType;
+  onSubmit: (actionInputType: ActionInputType) => void;
 }
-function StepOptionForm({ actionInputType }: StepOptionFormProps) {
-  const { getSelectedStep, updateStepActionInput } = useSteps();
-
-  const selectedStep = getSelectedStep();
+function StepOptionForm({ actionInputType, onSubmit }: StepOptionFormProps) {
+  const { selectedStep, updateStepActionInput } = useSteps();
 
   if (!selectedStep) return <NoStepSelected />;
 
   function handelOnChange(values: Field[]) {
+    onSubmit(actionInputType);
     updateStepActionInput(values, actionInputType);
   }
 
@@ -116,7 +117,7 @@ function StepOptionForm({ actionInputType }: StepOptionFormProps) {
     <Stack p="md">
       <DynamicForm
         actionInputType={actionInputType}
-        id={selectedStep.id}
+        id={selectedStep?.step?.id}
         onChange={handelOnChange}
       />
     </Stack>
