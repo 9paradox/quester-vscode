@@ -1,20 +1,26 @@
-import { vscode } from "./utilities/vscode";
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import "./App.css";
+import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import Editor from "./components/Editor";
+import { useState } from "react";
+import { useSteps } from "./Store";
+import Player from "./components/Player";
 
 function App() {
-  function handleHowdyClick() {
-    vscode.postMessage({
-      command: "hello",
-      text: "Hey there partner! 🤠",
-    });
-  }
+  const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
+  const { isTestRunning } = useSteps();
+  const toggleColorScheme = (value?: ColorScheme) => {
+    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+  };
 
   return (
-    <main>
-      <h1>Hello World!</h1>
-      <VSCodeButton onClick={handleHowdyClick}>Howdy!</VSCodeButton>
-    </main>
+    <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+      <MantineProvider theme={{ colorScheme }}>
+        <Notifications position="top-right" />
+        {!isTestRunning && <Editor />}
+        {isTestRunning && <Player />}
+      </MantineProvider>
+    </ColorSchemeProvider>
   );
 }
 
