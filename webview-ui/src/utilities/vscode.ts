@@ -9,6 +9,13 @@ import type { WebviewApi } from "vscode-webview";
  * dev server by using native web browser features that mock the functionality
  * enabled by acquireVsCodeApi.
  */
+
+export interface PostCommand<T> {
+  type: "command";
+  command: "runTestCase" | "stopTestCase" ;
+  value: T;
+}
+
 class VSCodeAPIWrapper {
   private readonly vsCodeApi: WebviewApi<unknown> | undefined;
 
@@ -33,6 +40,14 @@ class VSCodeAPIWrapper {
       this.vsCodeApi.postMessage(message);
     } else {
       console.log(message);
+    }
+  }
+
+  public postCommand<T>(command: PostCommand<T>) {
+    if (this.vsCodeApi) {
+      this.vsCodeApi.postMessage(command);
+    } else {
+      console.log(command);
     }
   }
 

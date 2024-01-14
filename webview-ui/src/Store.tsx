@@ -3,6 +3,8 @@ import { Action, ActionInputType, Field, Step, StepItem, ValueType } from "./Typ
 import { ACTIONS } from "./constants/ACTIONS";
 import { GetActionInput, GetDefaultActionInputType } from "./constants/ACTIONS_INPUT";
 import { CloneObject } from "./utilities/Helper";
+import { useEffect } from "react";
+import { vscode } from "./utilities/vscode";
 
 const actions = atom<Action[]>(ACTIONS);
 
@@ -10,12 +12,97 @@ export const ActionsStore = atom((get) => get(actions));
 
 const StepsStore = atom<StepItem[]>([]);
 
+const StepResultStore = atom<{ name: string; text: string }[]>([]);
+
 const IsTestRunningStore = atom<boolean>(false);
+const IsTestCompletedStore = atom<boolean>(false);
 
 export const useSteps = () => {
   const [steps, setSteps] = useAtom(StepsStore);
+  const [stepResults, setStepResults] = useAtom(StepResultStore);
   const [actions] = useAtom(ActionsStore);
   const [isTestRunning, setIsTestRunning] = useAtom(IsTestRunningStore);
+  const [isTestCompleted, setIsTestCompleted] = useAtom(IsTestCompletedStore);
+
+  useEffect(() => {
+    window.addEventListener("message", (event) => {
+      if (event?.data?.type == "command") {
+        handleEvent(event.data);
+      }
+    });
+  }, [stepResults]);
+
+  function runTest() {
+    if (isTestRunning) return;
+    setStepResults([]);
+    setIsTestCompleted(false);
+    setIsTestRunning(true);
+    const testCase = buildJsonTestcase("hello-testcase");
+
+    steps[0].completed = false;
+    const _steps = [...steps];
+    setSteps(_steps);
+
+    vscode.postCommand({
+      type: "command",
+      command: "runTestCase",
+      value: testCase,
+    });
+  }
+
+  function stopTest() {
+    if (!isTestRunning) return;
+    setIsTestRunning(false);
+    setStepResults([]);
+
+    const newSteps = steps.map((s, i) => {
+      s.completed = undefined;
+      s.success = undefined;
+      return s;
+    });
+    setSteps([...newSteps]);
+  }
+
+  function addStepResult(data: any) {
+    const newStepResult = {
+      name: "step-" + data.step.index,
+      text: JSON.stringify(data),
+    };
+
+    const newStepResults = [...stepResults, newStepResult];
+    setStepResults([...newStepResults]);
+
+    const newSteps = steps.map((s, i) => {
+      if (i + 1 === data.step.index) {
+        s.completed = true;
+        s.success = data?.stepResult?.success ?? false;
+      }
+      if (i + 1 === data.step.index + 1) {
+        s.completed = false;
+      }
+      return s;
+    });
+    setSteps([...newSteps]);
+  }
+
+  function testCaseCompleted(data: any) {
+    setIsTestCompleted(true);
+    const newSteps = steps.map((s, i) => {
+      s.completed = s.completed ?? false;
+      s.success = s.success ?? false;
+      return s;
+    });
+    setSteps([...newSteps]);
+    console.log(data);
+  }
+
+  function handleEvent(data: any) {
+    if (data.command == "callback") {
+      addStepResult(data.value);
+    } else if (data.command == "result") {
+      testCaseCompleted(data.value);
+    }
+  }
 
   function addStepFromAction(actionIndex: number, destinationIndex: number) {
     const action = actions[actionIndex];
@@ -213,18 +300,9 @@ export const useSteps = () => {
     const jsonTestcase = {
       title: title,
       steps: finalSteps,
+      delay: 2000,
     };
     return jsonTestcase;
-  }
-
-  function runTest() {
-    if (isTestRunning) return;
-    setIsTestRunning(true);
-  }
-
-  function stopTest() {
-    if (!isTestRunning) return;
-    setIsTestRunning(false);
   }
 
   return {
@@ -239,7 +317,9 @@ export const useSteps = () => {
     getStepActionInput,
     buildJsonTestcase,
     isTestRunning,
+    isTestCompleted,
     runTest,
     stopTest,
+    stepResults,
   };
 };
