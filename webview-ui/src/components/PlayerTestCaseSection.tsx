@@ -1,14 +1,15 @@
-import { Avatar, Badge, Box, Button, Card, Flex, Group, Stack, Text } from "@mantine/core";
-import { IconPlayerStopFilled } from "@tabler/icons-react";
+import { Avatar, Badge, Box, Button, Card, Flex, Group, Loader, Stack, Text } from "@mantine/core";
+import { IconCircleX, IconPlayerStopFilled } from "@tabler/icons-react";
 import useStyles from "../CustomStyles";
 import { StepItem } from "../Types";
 import { useSteps } from "../Store";
+import { IconCircleCheck } from "@tabler/icons-react";
 
 interface PlayerTestCaseSectionProps {}
 
 function PlayerTestCaseSection({}: PlayerTestCaseSectionProps) {
   const { classes } = useStyles();
-  const { steps, selectStep, stopTest } = useSteps();
+  const { steps, selectStep, stopTest, isTestCompleted } = useSteps();
 
   return (
     <>
@@ -18,13 +19,20 @@ function PlayerTestCaseSection({}: PlayerTestCaseSectionProps) {
             <Group>
               <Text fw={500}>TestCase Steps</Text>
             </Group>
-            <Button
-              variant="light"
-              leftIcon={<IconPlayerStopFilled size={14} />}
-              color="red"
-              onClick={stopTest}>
-              Stop
-            </Button>
+            {!isTestCompleted && (
+              <Button
+                variant="light"
+                leftIcon={<IconPlayerStopFilled size={14} />}
+                color="red"
+                onClick={stopTest}>
+                Stop
+              </Button>
+            )}
+            {isTestCompleted && (
+              <Button variant="light" onClick={stopTest}>
+                Close
+              </Button>
+            )}
           </Group>
         </Card.Section>
         <Box h="calc(100% - 60px)" className={classes.scrollArea}>
@@ -69,6 +77,9 @@ function StepCard({ index, step, onCardClick }: StepCardProps) {
         overflow: "visible",
       })}>
       <Flex mih={50} gap="md" align="center" direction="row" wrap="nowrap">
+        {step.completed == false && <Loader color="blue" size="xs" />}
+        {step.completed && step.success && <IconCircleCheck color="green" size="1rem" />}
+        {step.completed && step.success == false && <IconCircleX color="red" size="1rem" />}
         <Avatar size={48} radius="lg" color={step.selected ? "blue.6" : "gray.6"} m={16}>
           #{index + 1}
         </Avatar>
@@ -79,6 +90,7 @@ function StepCard({ index, step, onCardClick }: StepCardProps) {
               {step.actionItem.type}
             </Badge>
           </Group>
+
           <Text fz="xs" color="dimmed" w="100%">
             {step.actionItem.description}
           </Text>

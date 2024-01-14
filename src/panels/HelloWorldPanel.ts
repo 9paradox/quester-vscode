@@ -1,6 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import { apitester } from "@9paradox/apitester";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -134,21 +135,48 @@ export class HelloWorldPanel {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: any) => {
+      async (message: any) => {
         const command = message.command;
-        const text = message.text;
-
         switch (command) {
-          case "hello":
-            // Code that should run in response to the hello message command
-            window.showInformationMessage(text);
+          case "runTestCase":
+            await this.runTestCase(webview, message.value);
             return;
-          // Add more switch case statements here as more webview message commands
-          // are created within the webview context (i.e. inside media/main.js)
         }
       },
       undefined,
       this._disposables
     );
+  }
+
+  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  private async runTestCase(webview: Webview, testCaseData: any) {
+    try {
+      const testCase = apitester.createTestCase({
+        title: testCaseData.title,
+        callback: async (cd) => {
+          if (cd.type !== "after") {
+            return;
+          }
+          await this.delay(testCaseData.delay);
+          webview.postMessage({
+            type: "command",
+            command: "callback",
+            value: cd,
+          });
+        },
+        steps: testCaseData.steps,
+      });
+
+      var result = await testCase.test();
+
+      webview.postMessage({
+        type: "command",
+        command: "result",
+        value: result,
+      });
+    } catch (e) {
+      console.error("HelloWorldPanel.runTestCase", e);
+    }
   }
 }

@@ -17,6 +17,8 @@ export interface StepItem extends Step {
   selected: boolean;
   actionInput: ActionInput | null;
   selectedActionInput: ActionInputType;
+  completed?: boolean;
+  success?: boolean;
 }
 
 export enum DragList {

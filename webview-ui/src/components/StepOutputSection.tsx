@@ -1,22 +1,8 @@
-import { Card, ScrollArea, Text, Stack, Center, Group } from "@mantine/core";
-import { IconClick } from "@tabler/icons-react";
-import { ActionInputType } from "../Types";
+import { Card, ScrollArea, Text, Stack, Center, Group, Textarea } from "@mantine/core";
 import { useSteps } from "../Store";
-import { useState, useEffect } from "react";
 
 function StepOutputSection() {
-  const { getSelectedStep } = useSteps();
-
-  const [optionTab, setOptionTab] = useState<ActionInputType>(ActionInputType.simple);
-
-  const selectedStep = getSelectedStep();
-
-  useEffect(() => {
-    if (!selectedStep?.selectedActionInput || selectedStep?.selectedActionInput != optionTab) {
-      setOptionTab(selectedStep?.selectedActionInput ?? ActionInputType.simple);
-    }
-  }, [selectedStep?.selectedActionInput]);
-
+  const { stepResults } = useSteps();
   return (
     <Card shadow="none" withBorder radius="md" h="calc(100vh - 40px)" p="md">
       <Card.Section p="lg">
@@ -35,36 +21,21 @@ function StepOutputSection() {
             theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[0],
           borderRadius: theme.radius.md,
         })}>
-        <StepOutputOption />
+        {stepResults.map((step, index) => {
+          return (
+            <Textarea
+              key={index}
+              m="md"
+              autosize={true}
+              minRows={4}
+              readOnly={true}
+              label={step.name}
+              value={step.text}
+            />
+          );
+        })}
       </ScrollArea>
     </Card>
-  );
-}
-
-interface StepOutputOptionsProps {}
-function StepOutputOption({}: StepOutputOptionsProps) {
-  const { getSelectedStep } = useSteps();
-
-  const selectedStep = getSelectedStep();
-
-  return <StepOutput />;
-}
-
-function StepOutput() {
-  return (
-    <Center
-      h="calc(100vh - 500px)"
-      sx={() => ({
-        margin: "20px",
-        padding: "20px",
-      })}>
-      <Stack align="center">
-        <IconClick color="gray" size={40} />
-        <Text size="sm" color="dimmed" inline mt={7}>
-          Step output
-        </Text>
-      </Stack>
-    </Center>
   );
 }
 
