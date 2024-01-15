@@ -1,6 +1,7 @@
 import { Card, ScrollArea, Text, Stack, Center, Group, Textarea } from "@mantine/core";
 import { useSteps } from "../Store";
 import { IconClick } from "@tabler/icons-react";
+import ReactJson from "@microlink/react-json-view";
 
 function StepOutputSection() {
   const { stepResults, selectedStep } = useSteps();
@@ -15,6 +16,7 @@ function StepOutputSection() {
       <ScrollArea
         h="calc(100% - 120px)"
         mt="lg"
+        p="sm"
         offsetScrollbars
         type="hover"
         scrollbarSize={8}
@@ -25,13 +27,22 @@ function StepOutputSection() {
         })}>
         {!selectedStep && <NoStepSelected />}
         {selectedStep && selectedStepResult && (
-          <Textarea
-            m="md"
-            autosize={true}
-            minRows={4}
-            readOnly={true}
-            label={selectedStepResult?.name}
-            value={selectedStepResult?.text}
+          // <Textarea
+          //   m="md"
+          //   autosize={true}
+          //   minRows={4}
+          //   readOnly={true}
+          //   label={selectedStepResult?.name}
+          //   value={selectedStepResult?.text}
+          // />
+          <ReactJson
+            src={selectedStepResult?.result?.step?.outputData}
+            theme="railscasts"
+            collapsed={1}
+            displayDataTypes={false}
+            displayObjectSize={false}
+            enableClipboard={false}
+            name="outputData"
           />
         )}
       </ScrollArea>

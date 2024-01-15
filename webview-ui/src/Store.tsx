@@ -12,7 +12,7 @@ export const ActionsStore = atom((get) => get(actions));
 
 const StepsStore = atom<StepItem[]>([]);
 
-const StepResultStore = atom<{ name: string; text: string }[]>([]);
+const StepResultStore = atom<{ name: string; result: any }[]>([]);
 
 const IsTestRunningStore = atom<boolean>(false);
 const IsTestCompletedStore = atom<boolean>(false);
@@ -68,7 +68,7 @@ export const useSteps = () => {
   function addStepResult(data: any) {
     const newStepResult = {
       name: "step-" + data.step.index,
-      text: JSON.stringify(data),
+      result: data,
     };
 
     const newStepResults = [...stepResults, newStepResult];
