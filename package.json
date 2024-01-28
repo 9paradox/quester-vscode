@@ -8,10 +8,22 @@
   },
   "main": "./out/extension.js",
   "contributes": {
+    "customEditors": [
+      {
+        "viewType": "quester.apitesterEditor",
+        "displayName": "Apitester Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.apitester"
+          }
+        ]
+      }
+    ],
     "commands": [
       {
-        "command": "quester.showHelloWorld",
-        "title": "Quester: Show"
+        "command": "quester.apitesterEditor.new",
+        "title": "Create Apitester Document",
+        "category": "Apitester Editor"
       }
     ]
   },

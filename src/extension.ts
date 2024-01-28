@@ -1,12 +1,6 @@
-import { commands, ExtensionContext } from "vscode";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { ExtensionContext } from "vscode";
+import { ApiTesterEditor } from "./panels/ApiTesterEditor";
 
 export function activate(context: ExtensionContext) {
-  // Create the show hello world command
-  const showHelloWorldCommand = commands.registerCommand("quester.showHelloWorld", () => {
-    HelloWorldPanel.render(context.extensionUri);
-  });
-
-  // Add command to the extension context
-  context.subscriptions.push(showHelloWorldCommand);
+  context.subscriptions.push(ApiTesterEditor.register(context));
 }
