@@ -35,8 +35,16 @@ interface TestCaseSectionProps {
 function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
   const [deleteStepModelOpened, setDeleteStepModel] = useDisclosure(false);
   const { classes } = useStyles();
-  const { steps, selectStep, selectedStep, duplicateStep, deleteStep, isTestRunning, runTest } =
-    useSteps();
+  const {
+    steps,
+    selectStep,
+    selectedStep,
+    duplicateStep,
+    deleteStep,
+    isTestRunning,
+    runTest,
+    saveTestCase,
+  } = useSteps();
 
   function handelDeleteStep() {
     if (selectedStep == null) return;
@@ -93,7 +101,7 @@ function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
                     variant="light"
                     leftIcon={<IconDeviceFloppy size={14} />}
                     color="blue"
-                    onClick={onSaveClick}>
+                    onClick={saveTestCase}>
                     Save
                   </Button>
                 )}

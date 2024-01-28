@@ -5,6 +5,7 @@ import { GetActionInput, GetDefaultActionInputType } from "./constants/ACTIONS_I
 import { CloneObject } from "./utilities/Helper";
 import { useEffect } from "react";
 import { vscode } from "./utilities/vscode";
+import { notifications } from "@mantine/notifications";
 
 const actions = atom<Action[]>(ACTIONS);
 
@@ -17,6 +18,9 @@ const StepResultStore = atom<{ name: string; result: any }[]>([]);
 const IsTestRunningStore = atom<boolean>(false);
 const IsTestCompletedStore = atom<boolean>(false);
 const SelectedStep = atom<{ step: StepItem; index: number } | undefined>(undefined);
+const IsFullScreenLoading = atom<boolean>(true);
+
+let messageEventListenerAdded = false;
 
 export const useSteps = () => {
   const [steps, setSteps] = useAtom(StepsStore);
@@ -25,21 +29,32 @@ export const useSteps = () => {
   const [isTestRunning, setIsTestRunning] = useAtom(IsTestRunningStore);
   const [isTestCompleted, setIsTestCompleted] = useAtom(IsTestCompletedStore);
   const [selectedStep, setSelectedStep] = useAtom(SelectedStep);
+  const [isFullScreenLoading, setIsFullScreenLoading] = useAtom(IsFullScreenLoading);
 
   useEffect(() => {
-    window.addEventListener("message", (event) => {
+    if (messageEventListenerAdded) return;
+
+    const handleMessage = (event: any) => {
       if (event?.data?.type == "command") {
         handleEvent(event.data);
       }
-    });
-  }, [stepResults]);
+    };
+    window.addEventListener("message", handleMessage);
+    messageEventListenerAdded = true;
+    return () => {
+      if (messageEventListenerAdded) {
+        window.removeEventListener("message", handleMessage);
+        messageEventListenerAdded = false;
+      }
+    };
+  }, [stepResults]); //todo optimize
 
   function runTest() {
     if (isTestRunning) return;
     setStepResults([]);
     setIsTestCompleted(false);
     setIsTestRunning(true);
-    const testCase = buildJsonTestcase("hello-testcase");
+    const testCase = buildJsonTestCase("todo-test-case");
 
     steps[0].completed = false;
     const _steps = [...steps];
@@ -50,6 +65,17 @@ export const useSteps = () => {
       command: "runTestCase",
       value: testCase,
     });
+  }
+
+  function loadTestCase(data: any) {
+    console.log(data);
+    setStepResults([]);
+    setIsTestCompleted(false);
+    setIsTestRunning(false);
+
+    setSteps(data.steps);
+
+    setIsFullScreenLoading(false);
   }
 
   function stopTest() {
@@ -98,11 +124,34 @@ export const useSteps = () => {
     console.log(data);
   }
 
+  function testCaseSaved(data: any) {
+    console.log(data);
+    notifications.show({
+      withCloseButton: true,
+      title: data?.success ? "Testcase saved." : "Testcase failed to saved.",
+      message: data?.message ?? "Some error.",
+      color: data?.success ? "green" : "red",
+    });
+  }
+
+  function saveTestCase() {
+    const testCase = buildJsonTestCase("todo-test-case");
+    vscode.postCommand({
+      type: "command",
+      command: "saveTestCase",
+      value: testCase,
+    });
+  }
+
   function handleEvent(data: any) {
     if (data.command == "callback") {
       addStepResult(data.value);
     } else if (data.command == "result") {
       testCaseCompleted(data.value);
+    } else if (data.command == "save") {
+      testCaseSaved(data.value);
+    } else if (data.command == "loadTestCase") {
+      loadTestCase(data.value);
     }
   }
 
@@ -289,12 +338,13 @@ export const useSteps = () => {
     return null;
   }
 
-  function buildJsonTestcase(title: string) {
-    const finalSteps: Step[] = [];
+  function buildJsonTestCase(title: string) {
+    const finalSteps: StepItem[] = [];
 
     steps.forEach((step) => {
       //todo: validate and stop if invalid
-      const stepItem: Step = {
+      const stepItem: StepItem = {
+        ...step,
         action: step.action,
         inputData: buildStep(step),
       };
@@ -319,11 +369,14 @@ export const useSteps = () => {
     deleteStep,
     updateStepActionInput,
     getStepActionInput,
-    buildJsonTestcase,
+    buildJsonTestcase: buildJsonTestCase,
     isTestRunning,
     isTestCompleted,
     runTest,
     stopTest,
     stepResults,
+    saveTestCase,
+    isFullScreenLoading,
+    setIsFullScreenLoading,
   };
 };
