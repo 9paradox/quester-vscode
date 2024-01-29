@@ -21,7 +21,6 @@ function StepInputSection() {
       <Card.Section p="lg">
         <Group position="apart">
           <Text fw={500}>Step Input</Text>
-          <Text size="xs">0.6s</Text>
         </Group>
       </Card.Section>
       <ScrollArea

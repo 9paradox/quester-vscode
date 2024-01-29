@@ -52,6 +52,7 @@ export const useSteps = () => {
     const testCase = buildJsonTestCase("todo-test-case");
 
     steps[0].completed = false;
+    steps[0].selected = false;
     const _steps = [...steps];
     setSteps(_steps);
 

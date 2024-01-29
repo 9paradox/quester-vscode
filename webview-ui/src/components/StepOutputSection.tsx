@@ -27,23 +27,29 @@ function StepOutputSection() {
         })}>
         {!selectedStep && <NoStepSelected />}
         {selectedStep && selectedStepResult && (
-          // <Textarea
-          //   m="md"
-          //   autosize={true}
-          //   minRows={4}
-          //   readOnly={true}
-          //   label={selectedStepResult?.name}
-          //   value={selectedStepResult?.text}
-          // />
-          <ReactJson
-            src={selectedStepResult?.result?.step?.outputData}
-            theme="railscasts"
-            collapsed={1}
-            displayDataTypes={false}
-            displayObjectSize={false}
-            enableClipboard={false}
-            name="outputData"
-          />
+          <>
+            <ReactJson
+              src={selectedStepResult?.result?.step?.timeTaken}
+              theme="railscasts"
+              collapsed={1}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              enableClipboard={false}
+              name="timeTaken"
+              style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+            />
+
+            <ReactJson
+              src={selectedStepResult?.result?.step?.outputData}
+              theme="railscasts"
+              collapsed={1}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              enableClipboard={false}
+              name="outputData"
+              style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+            />
+          </>
         )}
       </ScrollArea>
     </Card>
