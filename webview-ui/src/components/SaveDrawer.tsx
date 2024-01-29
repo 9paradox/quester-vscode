@@ -16,11 +16,11 @@ function SaveDrawer({ opened, onClose }: SaveDrawerProps) {
   const [filename, setFilename] = useState(tempFilename);
   const [loading, setLoading] = useState(false);
 
-  const { buildJsonTestcase } = useSteps();
+  const { buildJsonTestCase } = useSteps();
 
   function handelDownload() {
     setLoading(true);
-    const jsonTestcase = buildJsonTestcase(title);
+    const jsonTestcase = buildJsonTestCase(title);
 
     downloadJSON(jsonTestcase, filename);
     setLoading(false);

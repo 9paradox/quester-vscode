@@ -17,7 +17,7 @@ export function Player() {
           <Grid.Col span={1}>
             <PlayerTestCaseSection />
           </Grid.Col>
-          <Grid.Col span={2} maw="40%">
+          <Grid.Col span={2} maw="40%" miw="30%">
             <StepOutputSection />
           </Grid.Col>
         </Grid>

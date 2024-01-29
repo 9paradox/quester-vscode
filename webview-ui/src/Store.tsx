@@ -33,17 +33,11 @@ export const useSteps = () => {
 
   useEffect(() => {
     if (messageEventListenerAdded) return;
-
-    const handleMessage = (event: any) => {
-      if (event?.data?.type == "command") {
-        handleEvent(event.data);
-      }
-    };
-    window.addEventListener("message", handleMessage);
+    window.addEventListener("message", handleEvent);
     messageEventListenerAdded = true;
     return () => {
       if (messageEventListenerAdded) {
-        window.removeEventListener("message", handleMessage);
+        window.removeEventListener("message", handleEvent);
         messageEventListenerAdded = false;
       }
     };
@@ -54,6 +48,7 @@ export const useSteps = () => {
     setStepResults([]);
     setIsTestCompleted(false);
     setIsTestRunning(true);
+    setSelectedStep(undefined);
     const testCase = buildJsonTestCase("todo-test-case");
 
     steps[0].completed = false;
@@ -72,8 +67,15 @@ export const useSteps = () => {
     setStepResults([]);
     setIsTestCompleted(false);
     setIsTestRunning(false);
+    setSelectedStep(undefined);
 
-    setSteps(data.steps);
+    var newSteps = data.steps.map((s: StepItem) => {
+      s.completed = undefined;
+      s.success = undefined;
+      s.selected = false;
+      return s;
+    });
+    setSteps(newSteps);
 
     setIsFullScreenLoading(false);
   }
@@ -143,7 +145,10 @@ export const useSteps = () => {
     });
   }
 
-  function handleEvent(data: any) {
+  function handleEvent(event: any) {
+    if (event?.data?.type != "command") return;
+
+    var data = event.data;
     if (data.command == "callback") {
       addStepResult(data.value);
     } else if (data.command == "result") {
@@ -347,6 +352,7 @@ export const useSteps = () => {
         ...step,
         action: step.action,
         inputData: buildStep(step),
+        selected: false,
       };
       finalSteps.push(stepItem);
     });
@@ -369,7 +375,7 @@ export const useSteps = () => {
     deleteStep,
     updateStepActionInput,
     getStepActionInput,
-    buildJsonTestcase: buildJsonTestCase,
+    buildJsonTestCase,
     isTestRunning,
     isTestCompleted,
     runTest,
