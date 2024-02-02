@@ -1,12 +1,21 @@
 {
   "name": "quester-vscode",
-  "displayName": "quester-vscode",
-  "description": "API testing for vscode",
+  "displayName": "Quester - Apitester",
+  "description": "API testing for vscode. Test all you REST-API flow with drag and drop interface. Build and test API test-cases easily.",
   "version": "0.0.1",
+  "publisher": "9paradox",
+  "author": "Akshay Gaonkar (9paradox)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/9paradox/quester-vscode.git"
+  },
+  "homepage": "https://github.com/9paradox/quester-vscode",
   "engines": {
     "vscode": "^1.75.0"
   },
   "main": "./out/extension.js",
+  "icon": "assets/logo.png",
   "contributes": {
     "customEditors": [
       {
