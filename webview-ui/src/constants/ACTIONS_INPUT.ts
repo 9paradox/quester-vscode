@@ -188,7 +188,25 @@ export const ACTIONS_INPUT: Dictionary<ActionInput> = {
         required: true,
       },
     ],
-    inputDataAdvance: null,
+    inputDataAdvance: [
+      {
+        label: "templateData",
+        description: "render string template based on input data from last step",
+        type: "string",
+        element: "textarea",
+        value: "",
+        required: true,
+      },
+      {
+        label: "outputDataFormat",
+        description: "render output format for template data",
+        type: "string",
+        element: "select",
+        value: "string",
+        options: ["string", "number", "boolean", "object"],
+        required: true,
+      },
+    ],
     inputDataRaw: CloneObject(RawOptions),
   },
   formatTemplate: {

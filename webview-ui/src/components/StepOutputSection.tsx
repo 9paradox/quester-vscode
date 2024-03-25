@@ -52,7 +52,7 @@ function StepOutputSection() {
               />
             )}
 
-            { typeof(selectedStepResult?.result?.step?.outputData) == "string" && (
+            {typeof selectedStepResult?.result?.step?.outputData == "string" && (
               <Textarea
                 autosize={true}
                 minRows={8}
