@@ -321,7 +321,7 @@ export const useSteps = () => {
       actionInput.inputDataRaw.length > 0
     ) {
       if (actionInput.inputDataRaw[0].value == "true") {
-        return null;
+        return undefined;
       } else {
         const actionInputRaw = actionInput.inputDataRaw[1];
         return getValue(actionInputRaw.value, actionInputRaw.type);

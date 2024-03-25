@@ -39,16 +39,29 @@ function StepOutputSection() {
               style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
             />
 
-            <ReactJson
-              src={selectedStepResult?.result?.step?.outputData}
-              theme="railscasts"
-              collapsed={1}
-              displayDataTypes={false}
-              displayObjectSize={false}
-              enableClipboard={false}
-              name="outputData"
-              style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
-            />
+            {selectedStepResult?.result?.step?.outputData instanceof Object && (
+              <ReactJson
+                src={selectedStepResult?.result?.step?.outputData}
+                theme="railscasts"
+                collapsed={1}
+                displayDataTypes={false}
+                displayObjectSize={false}
+                enableClipboard={false}
+                name="outputData"
+                style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+              />
+            )}
+
+            { typeof(selectedStepResult?.result?.step?.outputData) == "string" && (
+              <Textarea
+                autosize={true}
+                minRows={8}
+                readOnly={true}
+                label="outputData"
+                value={selectedStepResult?.result?.step?.outputData}
+                style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+              />
+            )}
           </>
         )}
       </ScrollArea>
