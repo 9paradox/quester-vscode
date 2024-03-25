@@ -26,7 +26,14 @@ export interface TestCaseError {
   message?: string;
   exception?: string;
   stepIndex?: number;
-  type: 'error' | 'exception';
+  type: "error" | "exception";
+}
+
+export interface TestCaseOptions {
+  title?: string;
+  dataFilePath?: string;
+  logPath?: string;
+  logEachStep?: boolean;
 }
 
 export enum DragList {

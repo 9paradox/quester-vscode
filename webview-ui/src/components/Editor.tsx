@@ -6,11 +6,11 @@ import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useSteps } from "../Store";
 import { DragList } from "../Types";
 import { useDisclosure } from "@mantine/hooks";
-import SaveDrawer from "./SaveDrawer";
+import TestCaseDetailsDrawer from "./TestCaseDetailsDrawer";
 
 export function Editor() {
   const { addStepFromAction, reorderStep, isTestRunning } = useSteps();
-  const [exportDrawerOpened, setExportDrawerOpened] = useDisclosure(false);
+  const [testCaseDetailsDrawerOpened, setTestCaseDetailsOpened] = useDisclosure(false);
 
   const onDragEnd = ({ source, destination }: DropResult) => {
     if (!destination) return;
@@ -32,7 +32,10 @@ export function Editor() {
       sx={(theme) => ({
         backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : "#f4f9fd",
       })}>
-      <SaveDrawer opened={exportDrawerOpened} onClose={setExportDrawerOpened.close} />
+      <TestCaseDetailsDrawer
+        opened={testCaseDetailsDrawerOpened}
+        onClose={setTestCaseDetailsOpened.close}
+      />
       <Container size="100rem" h="calc(100vh - 20px)" pt={20}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Grid grow justify="center">
@@ -42,7 +45,7 @@ export function Editor() {
               </Grid.Col>
             )}
             <Grid.Col span={3} style={{ minHeight: rem(120) }}>
-              <TestCaseSection onExportClick={setExportDrawerOpened.open} />
+              <TestCaseSection onTestCaseDetailsClick={setTestCaseDetailsOpened.open} />
             </Grid.Col>
             <Grid.Col span={2}>
               <StepOptionSection />

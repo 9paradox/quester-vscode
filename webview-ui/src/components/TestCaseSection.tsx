@@ -12,9 +12,10 @@ import {
   Modal,
   Stack,
   Text,
+  Tooltip,
 } from "@mantine/core";
 import {
-  IconAdjustmentsHorizontal,
+  IconEdit,
   IconCopy,
   IconDeviceFloppy,
   IconDotsVertical,
@@ -29,10 +30,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { useSteps } from "../Store";
 
 interface TestCaseSectionProps {
-  onExportClick: () => void;
+  onTestCaseDetailsClick: () => void;
 }
 
-function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
+function TestCaseSection({ onTestCaseDetailsClick }: TestCaseSectionProps) {
   const [deleteStepModelOpened, setDeleteStepModel] = useDisclosure(false);
   const { classes } = useStyles();
   const {
@@ -44,6 +45,7 @@ function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
     isTestRunning,
     runTest,
     saveTestCase,
+    testCaseOptions,
   } = useSteps();
 
   function handelDeleteStep() {
@@ -89,9 +91,18 @@ function TestCaseSection({ onExportClick: onSaveClick }: TestCaseSectionProps) {
         <Card.Section p="lg">
           <Group position="apart">
             <Group>
-              <Text fw={500}>TestCase Steps</Text>
-              <ActionIcon onClick={() => {}} size="lg">
-                <IconAdjustmentsHorizontal size="1.2rem" />
+              <Tooltip
+                label={testCaseOptions?.title ?? "my-test-case"}
+                multiline
+                w={220}
+                withArrow
+                transitionProps={{ duration: 200 }}>
+                <Text fw={500} truncate="end" style={{ maxWidth: "300px" }}>
+                  {testCaseOptions?.title ?? "my-test-case"}
+                </Text>
+              </Tooltip>
+              <ActionIcon onClick={onTestCaseDetailsClick} size="lg">
+                <IconEdit size="1.2rem" />
               </ActionIcon>
             </Group>
             {steps.length > 0 && (

@@ -140,6 +140,9 @@ export class ApiTesterEditor implements vscode.CustomTextEditorProvider {
     try {
       const testCase = apitester.createTestCase({
         title: testCaseData.title,
+        logPath: testCaseData.logPath,
+        logEachStep: testCaseData.logEachStep,
+        dataFilePath: testCaseData.dataFilePath,
         callback: async (cd) => {
           if (cd.type !== "after") {
             return;

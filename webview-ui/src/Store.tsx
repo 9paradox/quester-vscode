@@ -1,5 +1,13 @@
 import { atom, useAtom } from "jotai";
-import { Action, ActionInputType, Field, Step, StepItem, TestCaseError, ValueType } from "./Types";
+import {
+  Action,
+  ActionInputType,
+  Field,
+  StepItem,
+  TestCaseError,
+  TestCaseOptions,
+  ValueType,
+} from "./Types";
 import { ACTIONS } from "./constants/ACTIONS";
 import { GetActionInput, GetDefaultActionInputType } from "./constants/ACTIONS_INPUT";
 import { CloneObject } from "./utilities/Helper";
@@ -19,6 +27,7 @@ const IsTestRunningStore = atom<boolean>(false);
 const IsTestCompletedStore = atom<boolean>(false);
 const SelectedStepStore = atom<{ step: StepItem; index: number } | undefined>(undefined);
 const IsFullScreenLoadingStore = atom<boolean>(true);
+const TestCaseOptionsStore = atom<TestCaseOptions | undefined>(undefined);
 
 let messageEventListenerAdded = false;
 
@@ -30,6 +39,7 @@ export const useSteps = () => {
   const [isTestCompleted, setIsTestCompleted] = useAtom(IsTestCompletedStore);
   const [selectedStep, setSelectedStep] = useAtom(SelectedStepStore);
   const [isFullScreenLoading, setIsFullScreenLoading] = useAtom(IsFullScreenLoadingStore);
+  const [testCaseOptions, setTestCaseOptions] = useAtom(TestCaseOptionsStore);
 
   useEffect(() => {
     if (messageEventListenerAdded) return;
@@ -49,7 +59,7 @@ export const useSteps = () => {
     setIsTestCompleted(false);
     setIsTestRunning(true);
     setSelectedStep(undefined);
-    const testCase = buildJsonTestCase("todo-test-case");
+    const testCase = buildJsonTestCase();
 
     steps[0].completed = false;
     steps[0].selected = false;
@@ -64,11 +74,20 @@ export const useSteps = () => {
   }
 
   function loadTestCase(data: any) {
-    console.log(data);
+    console.log("loadTestCase", data);
     setStepResults([]);
     setIsTestCompleted(false);
     setIsTestRunning(false);
     setSelectedStep(undefined);
+
+    const newTestCaseOptions = {
+      title: data.title,
+      dataFilePath: data.dataFilePath,
+      logPath: data.logPath,
+      logEachStep: data.logEachStep ?? false,
+    };
+
+    setTestCaseOptions(newTestCaseOptions);
 
     var newSteps = data.steps.map((s: StepItem) => {
       s.completed = undefined;
@@ -76,6 +95,7 @@ export const useSteps = () => {
       s.selected = false;
       return s;
     });
+
     setSteps(newSteps);
 
     setIsFullScreenLoading(false);
@@ -150,12 +170,17 @@ export const useSteps = () => {
   }
 
   function saveTestCase() {
-    const testCase = buildJsonTestCase("todo-test-case");
+    const testCase = buildJsonTestCase();
     vscode.postCommand({
       type: "command",
       command: "saveTestCase",
       value: testCase,
     });
+  }
+
+  function saveTestCaseWithOptions(testCaseOptions: TestCaseOptions) {
+    setTestCaseOptions(testCaseOptions);
+    saveTestCase();
   }
 
   function handleEvent(event: any) {
@@ -356,7 +381,7 @@ export const useSteps = () => {
     return null;
   }
 
-  function buildJsonTestCase(title: string) {
+  function buildJsonTestCase() {
     const finalSteps: StepItem[] = [];
 
     steps.forEach((step) => {
@@ -370,12 +395,21 @@ export const useSteps = () => {
       finalSteps.push(stepItem);
     });
 
-    const jsonTestcase = {
-      title: title,
+    const jsonTestCase = {
+      title: testCaseOptions?.title ?? "my-test-case",
+      dataFilePath:
+        testCaseOptions?.dataFilePath && (testCaseOptions?.dataFilePath?.length ?? 0) > 0
+          ? testCaseOptions.dataFilePath
+          : undefined,
+      logPath:
+        testCaseOptions?.logPath && (testCaseOptions.logPath?.length ?? 0) > 0
+          ? testCaseOptions.logPath
+          : undefined,
+      logEachStep: testCaseOptions?.logEachStep == true,
       steps: finalSteps,
       delay: 2000,
     };
-    return jsonTestcase;
+    return jsonTestCase;
   }
 
   return {
@@ -397,5 +431,8 @@ export const useSteps = () => {
     saveTestCase,
     isFullScreenLoading,
     setIsFullScreenLoading,
+    testCaseOptions,
+    setTestCaseOptions,
+    saveTestCaseWithOptions,
   };
 };
