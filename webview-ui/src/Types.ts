@@ -21,6 +21,14 @@ export interface StepItem extends Step {
   success?: boolean;
 }
 
+export interface TestCaseError {
+  title: string;
+  message?: string;
+  exception?: string;
+  stepIndex?: number;
+  type: 'error' | 'exception';
+}
+
 export enum DragList {
   actionList = "action-list",
   stepList = "step-list",

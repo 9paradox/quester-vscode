@@ -62,6 +62,19 @@ function StepOutputSection() {
                 style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
               />
             )}
+
+            {selectedStepResult?.testCaseError && (
+              <ReactJson
+                src={selectedStepResult?.testCaseError}
+                theme="railscasts"
+                collapsed={1}
+                displayDataTypes={false}
+                displayObjectSize={false}
+                enableClipboard={false}
+                name="error"
+                style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+              />
+            )}
           </>
         )}
       </ScrollArea>

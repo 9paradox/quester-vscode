@@ -1,5 +1,5 @@
 import { atom, useAtom } from "jotai";
-import { Action, ActionInputType, Field, Step, StepItem, ValueType } from "./Types";
+import { Action, ActionInputType, Field, Step, StepItem, TestCaseError, ValueType } from "./Types";
 import { ACTIONS } from "./constants/ACTIONS";
 import { GetActionInput, GetDefaultActionInputType } from "./constants/ACTIONS_INPUT";
 import { CloneObject } from "./utilities/Helper";
@@ -13,12 +13,12 @@ export const ActionsStore = atom((get) => get(actions));
 
 const StepsStore = atom<StepItem[]>([]);
 
-const StepResultStore = atom<{ name: string; result: any }[]>([]);
+const StepResultStore = atom<{ name: string; result: any; testCaseError?: TestCaseError }[]>([]);
 
 const IsTestRunningStore = atom<boolean>(false);
 const IsTestCompletedStore = atom<boolean>(false);
-const SelectedStep = atom<{ step: StepItem; index: number } | undefined>(undefined);
-const IsFullScreenLoading = atom<boolean>(true);
+const SelectedStepStore = atom<{ step: StepItem; index: number } | undefined>(undefined);
+const IsFullScreenLoadingStore = atom<boolean>(true);
 
 let messageEventListenerAdded = false;
 
@@ -28,8 +28,8 @@ export const useSteps = () => {
   const [actions] = useAtom(ActionsStore);
   const [isTestRunning, setIsTestRunning] = useAtom(IsTestRunningStore);
   const [isTestCompleted, setIsTestCompleted] = useAtom(IsTestCompletedStore);
-  const [selectedStep, setSelectedStep] = useAtom(SelectedStep);
-  const [isFullScreenLoading, setIsFullScreenLoading] = useAtom(IsFullScreenLoading);
+  const [selectedStep, setSelectedStep] = useAtom(SelectedStepStore);
+  const [isFullScreenLoading, setIsFullScreenLoading] = useAtom(IsFullScreenLoadingStore);
 
   useEffect(() => {
     if (messageEventListenerAdded) return;
@@ -106,7 +106,7 @@ export const useSteps = () => {
     const newSteps = steps.map((s, i) => {
       if (i + 1 === data.step.index) {
         s.completed = true;
-        s.success = data?.stepResult?.success ?? false;
+        s.success = data?.stepResult?.success ? true : false;
       }
       if (i + 1 === data.step.index + 1) {
         s.completed = false;
@@ -119,12 +119,24 @@ export const useSteps = () => {
   function testCaseCompleted(data: any) {
     setIsTestCompleted(true);
     const newSteps = steps.map((s, i) => {
-      s.completed = s.completed ?? false;
-      s.success = s.success ?? false;
+      s.completed = s.completed ? true : false;
+      s.success = s.success ? true : false;
       return s;
     });
+
     setSteps([...newSteps]);
-    console.log(data);
+
+    const testCaseError = data.error;
+    if (testCaseError) {
+      const newStepResults = stepResults.map((s, i) => {
+        if (i + 1 === testCaseError.stepIndex) {
+          s.testCaseError = testCaseError;
+        }
+        return s;
+      });
+      setStepResults([...newStepResults]);
+    }
+    console.log("testCaseCompleted", data);
   }
 
   function testCaseSaved(data: any) {
