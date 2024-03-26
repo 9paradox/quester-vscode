@@ -111,3 +111,5 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+.yalc
+yalc.lock
