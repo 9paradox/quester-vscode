@@ -114,11 +114,11 @@ function StepCard({ index, step, onCardClick }: StepCardProps) {
 }
 
 interface StepStatusProp {
-  completed?: boolean;
+  completed?: "loading" | boolean;
   success?: boolean;
 }
 function StepStatus({ completed, success }: StepStatusProp) {
-  if (!completed) {
+  if (completed == "loading") {
     return <Loader color="blue" size="xs" />;
   }
   if (completed && success) {

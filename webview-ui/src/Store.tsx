@@ -61,7 +61,7 @@ export const useSteps = () => {
     setSelectedStep(undefined);
     const testCase = buildJsonTestCase();
 
-    steps[0].completed = false;
+    steps[0].completed = "loading";
     steps[0].selected = false;
     const _steps = [...steps];
     setSteps(_steps);
@@ -74,7 +74,6 @@ export const useSteps = () => {
   }
 
   function loadTestCase(data: any) {
-    console.log("loadTestCase", data);
     setStepResults([]);
     setIsTestCompleted(false);
     setIsTestRunning(false);
@@ -129,7 +128,7 @@ export const useSteps = () => {
         s.success = data?.stepResult?.success ? true : false;
       }
       if (i + 1 === data.step.index + 1) {
-        s.completed = false;
+        s.completed = "loading";
       }
       return s;
     });
@@ -156,11 +155,9 @@ export const useSteps = () => {
       });
       setStepResults([...newStepResults]);
     }
-    console.log("testCaseCompleted", data);
   }
 
   function testCaseSaved(data: any) {
-    console.log(data);
     notifications.show({
       withCloseButton: true,
       title: data?.success ? "Testcase saved." : "Testcase failed to saved.",
