@@ -304,6 +304,38 @@ export const ACTIONS_INPUT: Dictionary<ActionInput> = {
     ],
     inputDataRaw: CloneObject(RawOptions),
   },
+  verifyTimeTaken: {
+    inputDataSimple: null,
+    inputDataAdvance: [
+      {
+        label: "expected",
+        description: "expected value",
+        type: "number",
+        element: "input",
+        value: "",
+        required: true,
+      },
+      {
+        label: "format",
+        description: "compare expected time against milliseconds or seconds of actual time",
+        type: "string",
+        element: "select",
+        value: "ms",
+        options: ["ms", "s"],
+        required: true,
+      },
+      {
+        label: "toBe",
+        description: "compare value with expected value",
+        type: "string",
+        element: "select",
+        options: CloneObject(ToBeType),
+        value: "equal",
+        required: true,
+      },
+    ],
+    inputDataRaw: CloneObject(RawOptions),
+  },
   pickStep: {
     inputDataSimple: [
       {
