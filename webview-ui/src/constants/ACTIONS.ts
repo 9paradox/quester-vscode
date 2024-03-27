@@ -80,6 +80,13 @@ var actions: Action[] = [
   },
   {
     index: 0,
+    name: "customFnFrom",
+    type: "ACTION",
+    color: "blue",
+    description: "Run custom function from a javascript file as a step.",
+  },
+  {
+    index: 0,
     name: "log",
     type: "OTHER",
     color: "gray",

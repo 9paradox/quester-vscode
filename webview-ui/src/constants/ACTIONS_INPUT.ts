@@ -355,6 +355,37 @@ export const ACTIONS_INPUT: Dictionary<ActionInput> = {
     inputDataAdvance: StepOptionsType,
     inputDataRaw: CloneObject(RawOptions),
   },
+  customFnFrom: {
+    inputDataSimple: null,
+    inputDataAdvance: [
+      {
+        label: "stepType",
+        description: "type of step",
+        type: "string",
+        element: "select",
+        value: "Action",
+        options: ["Action", "Verification"],
+        required: true,
+      },
+      {
+        label: "filePath",
+        description: "file path of the javascript file",
+        type: "string",
+        element: "input",
+        value: "",
+        required: true,
+      },
+      {
+        label: "functionName",
+        description: "name of the function which is exported from the file",
+        type: "string",
+        element: "input",
+        value: "",
+        required: true,
+      },
+    ],
+    inputDataRaw: null,
+  },
   log: {
     inputDataSimple: null,
     inputDataAdvance: null,
