@@ -31,10 +31,22 @@
     "commands": [
       {
         "command": "quester.apitesterEditor.new",
-        "title": "Create Apitester Document",
-        "category": "Apitester Editor"
+        "title": "Create Apitester Document"
+      },
+      {
+        "command": "quester.apitesterRunner.open",
+        "title": "Open in Quester runner"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "quester.apitesterRunner.open",
+          "alt": "quester.apitesterRunner.open"
+        }
+      ]
+    }
   },
   "jest": {
     "injectGlobals": false
@@ -63,6 +75,6 @@
     "vscode-test": "^1.5.0"
   },
   "dependencies": {
-    "@9paradox/apitester": "^0.1.6"
+    "@9paradox/apitester": "^0.1.8"
   }
 }

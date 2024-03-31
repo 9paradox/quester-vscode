@@ -11,8 +11,8 @@ import type { WebviewApi } from "vscode-webview";
  */
 
 export interface PostCommand<T> {
-  type: "command";
-  command: "loadTestCase" | "runTestCase" | "stopTestCase" | "saveTestCase";
+  type: "command" | "runner-command";
+  command: "loadTestCase" | "runTestCase" | "stopTestCase" | "saveTestCase" | "callback" | "result" | "loadTestCases";
   value: T;
 }
 

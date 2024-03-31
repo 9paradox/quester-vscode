@@ -126,7 +126,7 @@ export class ApiTesterEditor implements vscode.CustomTextEditorProvider {
           <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
           <title>Hello World</title>
         </head>
-        <body>
+        <body ui-mode="editor">
           <div id="root"></div>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>

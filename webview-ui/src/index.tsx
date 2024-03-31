@@ -1,10 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import "./index.css";
+import ApiTesterEditor from "./ApiTesterEditor";
+import ApiTesterRunner from "./ApiTesterRunner";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const root = document.getElementById("root");
+const uiMode = document.body.getAttribute("ui-mode");
+
+if (uiMode === "runner") {
+  ReactDOM.createRoot(root as HTMLElement).render(
+    <React.StrictMode>
+      <ApiTesterRunner />
+    </React.StrictMode>
+  );
+} else {
+  ReactDOM.createRoot(root as HTMLElement).render(
+    <React.StrictMode>
+      <ApiTesterEditor />
+    </React.StrictMode>
+  );
+}
