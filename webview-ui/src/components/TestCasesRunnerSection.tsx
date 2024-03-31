@@ -1,4 +1,16 @@
-import { Avatar, Box, Button, Card, Center, Flex, Group, Loader, Stack, Text } from "@mantine/core";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Center,
+  Drawer,
+  Flex,
+  Group,
+  Loader,
+  Stack,
+  Text,
+} from "@mantine/core";
 import {
   IconAlertTriangle,
   IconCircleX,
@@ -10,11 +22,14 @@ import useStyles from "../CustomStyles";
 import { TestCaseItem } from "../Types";
 import { IconCircleCheck } from "@tabler/icons-react";
 import { useTestCases } from "../RunnerStore";
+import { useDisclosure } from "@mantine/hooks";
+import ReactJson from "@microlink/react-json-view";
 
 interface TestCasesRunnerSectionProps {}
 
 function TestCasesRunnerSection({}: TestCasesRunnerSectionProps) {
   const { classes } = useStyles();
+  const [testCaseDrawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false);
   const {
     folderPath,
     testCases,
@@ -24,10 +39,36 @@ function TestCasesRunnerSection({}: TestCasesRunnerSectionProps) {
     runTest,
     stopTest,
     closeTest,
+    selectedTestCase,
   } = useTestCases();
+
+  function openTestCaseDrawer(testCase: TestCaseItem) {
+    if (!isTestRunning && isTestCompleted) {
+      selectTestCase(testCase);
+      if (testCase?.error) openDrawer();
+    }
+  }
 
   return (
     <>
+      <Drawer
+        opened={testCaseDrawerOpened}
+        onClose={closeDrawer}
+        title={<Text>TestCase Details</Text>}
+        position="right">
+        {selectedTestCase?.testCase?.error && (
+          <ReactJson
+            src={selectedTestCase?.testCase?.error}
+            theme="railscasts"
+            collapsed={1}
+            displayDataTypes={false}
+            displayObjectSize={false}
+            enableClipboard={false}
+            name="error"
+            style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+          />
+        )}
+      </Drawer>
       <Card shadow="none" withBorder radius="md" h="calc(100vh - 40px)" p="md">
         <Card.Section p="lg">
           <Group position="apart">
@@ -69,7 +110,8 @@ function TestCasesRunnerSection({}: TestCasesRunnerSectionProps) {
               <TestCaseCard
                 key={index}
                 testCase={testCase}
-                onCardClick={() => selectTestCase(testCase)}
+                disableClick={isTestRunning}
+                onCardClick={() => openTestCaseDrawer(testCase)}
               />
             ))}
           {(!testCases || testCases.length === 0) && <NoTestCases />}
@@ -82,8 +124,9 @@ function TestCasesRunnerSection({}: TestCasesRunnerSectionProps) {
 interface TestCaseCardProps {
   testCase: TestCaseItem;
   onCardClick: () => void;
+  disableClick?: boolean;
 }
-function TestCaseCard({ testCase, onCardClick }: TestCaseCardProps) {
+function TestCaseCard({ testCase, onCardClick, disableClick }: TestCaseCardProps) {
   return (
     <Card
       shadow="none"
@@ -91,6 +134,8 @@ function TestCaseCard({ testCase, onCardClick }: TestCaseCardProps) {
       radius="md"
       m={16}
       onClick={(e) => {
+        //console.log("disableClick", disableClick);
+        if (disableClick) return;
         if (testCase.selected) {
           e.preventDefault();
           e.stopPropagation();
@@ -100,7 +145,8 @@ function TestCaseCard({ testCase, onCardClick }: TestCaseCardProps) {
         onCardClick();
       }}
       sx={(theme) => ({
-        boxShadow: testCase.selected ? `inset 0 0 0px 2px ${theme.colors.blue[3]}` : "",
+        boxShadow:
+          testCase.selected && !disableClick ? `inset 0 0 0px 2px ${theme.colors.blue[3]}` : "",
         overflow: "visible",
       })}>
       <Flex mih={50} gap="md" align="center" direction="row" wrap="nowrap">
@@ -129,12 +175,12 @@ function TestCaseStatus({ completed, success }: TestCaseStatusProp) {
     return <Loader color="blue" size="xs" />;
   }
   if (completed && success) {
-    return <IconCircleCheck color="green" size="1rem" />;
+    return <IconCircleCheck color="green" size="2rem" />;
   }
   if (completed && success == false) {
-    return <IconCircleX color="red" size="1rem" />;
+    return <IconCircleX color="red" size="2rem" />;
   }
-  return <IconFlask color="gray" size="1rem" />;
+  return <IconFlask color="gray" size="2rem" />;
 }
 
 function NoTestCases() {

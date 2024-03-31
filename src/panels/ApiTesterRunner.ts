@@ -185,7 +185,7 @@ export class ApiTesterRunner {
           command: "testCasesCallback",
           value: cd,
         });
-        console.log("callback", cd);
+        //console.log("callback", cd);
       });
 
       webview.postMessage({

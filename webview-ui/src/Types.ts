@@ -28,6 +28,7 @@ export interface TestCaseItem {
   selected: boolean;
   completed?: "loading" | boolean;
   success?: boolean;
+  error?: any;
 }
 
 interface Error {

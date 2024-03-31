@@ -7,6 +7,7 @@ A simple rest api testing tool. Crafted with easy to use actions and verificatio
 [Download](https://marketplace.visualstudio.com/items?itemName=9paradox.quester-vscode) from Visual Studio Code marketplace.
 
 ### Quick start
+
 1. Create a new file with extension `.apitester`. Example `my-api-verification.apitester`.
 2. Drag and drop actions from Actions list into the testcase.
 3. Set your options for each steps you add to the testcase.
@@ -14,6 +15,14 @@ A simple rest api testing tool. Crafted with easy to use actions and verificatio
 5. Finally click `Save` to save the testcase.
 
 ![Quester vscode extension](./assets/quester-vscode-screenshot.png)
+
+#### Running apitester testcases
+
+1. Right click on any folder or workspace folder where apitester testcases are available (valid apitester testcases files ending with `.apitester` or `.test.json`).
+2. Click on `Open in Quester runner`.
+3. Finally to the testcases click on `Run`.
+
+![Quester vscode extension](./assets/apitester-runner-screenshot.png)
 
 # apitester
 

@@ -7,9 +7,6 @@ const TestCasesStore = atom<TestCaseItem[]>([]);
 const SelectedTestCaseStore = atom<{ testCase: TestCaseItem; index: number } | undefined>(
   undefined
 );
-const TestCaseResultsStore = atom<
-  { filePath: string; result: any; testCaseError?: TestCaseError }[]
->([]);
 
 const IsFullScreenLoadingStore = atom<boolean>(true);
 const IsTestRunningStore = atom<boolean>(false);
@@ -21,7 +18,6 @@ let messageEventListenerAdded = false;
 export const useTestCases = () => {
   const [testCases, setTestCases] = useAtom(TestCasesStore);
   const [selectedTestCase, setSelectedTestCase] = useAtom(SelectedTestCaseStore);
-  const [testCaseResults, setTestCaseResults] = useAtom(TestCaseResultsStore);
   const [isFullScreenLoading, setIsFullScreenLoading] = useAtom(IsFullScreenLoadingStore);
   const [isTestRunning, setIsTestRunning] = useAtom(IsTestRunningStore);
   const [isTestCompleted, setIsTestCompleted] = useAtom(IsTestCompletedStore);
@@ -37,7 +33,7 @@ export const useTestCases = () => {
         messageEventListenerAdded = false;
       }
     };
-  }, [testCaseResults]); //todo optimize
+  }, [testCases]); //todo optimize
 
   function handleEvent(event: any) {
     if (event?.data?.type != "runner-command") return;
@@ -58,13 +54,11 @@ export const useTestCases = () => {
       result: data.testCaseResult,
     };
 
-    const newTestCasesResults = [...testCaseResults, newTestCaseResult];
-    setTestCaseResults([...newTestCasesResults]);
-
     const newTestCases = testCases.map((t, i) => {
       if (t.filePath === data.filePath) {
         t.completed = true;
         t.success = data?.testCaseResult?.success ? true : false;
+        t.error = data?.testCaseResult?.error;
         if (
           i + 1 < testCases.length &&
           testCases[i + 1] &&
@@ -77,13 +71,13 @@ export const useTestCases = () => {
     });
     setTestCases([...newTestCases]);
 
-    console.log("addTestCaseResult", data);
+    //console.log("addTestCaseResult", data);
   }
 
   function testCasesCompleted(data: any) {
     setIsTestCompleted(true);
     setIsTestRunning(false);
-    console.log("testCasesCompleted", data);
+    //console.log("testCasesCompleted", data);
 
     const newTestCases = testCases.map((t, i) => {
       t.completed = t.completed ? true : false;
@@ -92,21 +86,9 @@ export const useTestCases = () => {
     });
 
     setTestCases([...newTestCases]);
-
-    // const testCaseError = data.error;
-    // if (testCaseError) {
-    //   const newStepResults = stepResults.map((s, i) => {
-    //     if (i + 1 === testCaseError.stepIndex) {
-    //       s.testCaseError = testCaseError;
-    //     }
-    //     return s;
-    //   });
-    //   setStepResults([...newStepResults]);
-    // }
   }
 
   function loadTestCases(data: any) {
-    setTestCaseResults([]);
     setIsTestCompleted(false);
     setIsTestRunning(false);
     setSelectedTestCase(undefined);
@@ -116,6 +98,7 @@ export const useTestCases = () => {
       t.completed = undefined;
       t.success = undefined;
       t.selected = false;
+      t.error = undefined;
       return t;
     });
 
@@ -146,7 +129,6 @@ export const useTestCases = () => {
 
   function runTest() {
     if (isTestRunning) return;
-    setTestCaseResults([]);
     setIsTestCompleted(false);
     setIsTestRunning(true);
     setSelectedTestCase(undefined);
@@ -175,7 +157,6 @@ export const useTestCases = () => {
   function resetTest() {
     setIsTestRunning(false);
     setIsTestCompleted(false);
-    setTestCaseResults([]);
 
     const newTestCases = testCases.map((t, i) => {
       t.completed = undefined;
@@ -184,14 +165,13 @@ export const useTestCases = () => {
       return t;
     });
     setTestCases([...newTestCases]);
-    console.log("stopTest", isTestRunning, isTestCompleted, testCases);
+    //console.log("stopTest", isTestRunning, isTestCompleted, testCases);
   }
 
   return {
     folderPath,
     testCases,
     selectedTestCase,
-    testCaseResults,
     isFullScreenLoading,
     isTestRunning,
     isTestCompleted,
