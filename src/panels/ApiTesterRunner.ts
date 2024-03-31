@@ -133,15 +133,15 @@ export class ApiTesterRunner {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: any) => {
+      async (message: any) => {
         const command = message.command;
         switch (command) {
           case "loadTestCases":
             this.loadTestCases(webview);
             return;
-          // case "runTestCases":
-          //   await this.runTestCase(webviewPanel.webview, message.value);
-          //   return;
+          case "runTestCases":
+            await this.runTestCases(webview, 1000);
+            return;
         }
       },
       undefined,
@@ -154,7 +154,7 @@ export class ApiTesterRunner {
     webview.postMessage({
       type: "runner-command",
       command: "loadTestCases",
-      value: testCases,
+      value: { testCases: testCases, folderPath: ApiTesterRunner.folderPath },
     });
   }
 
@@ -162,9 +162,39 @@ export class ApiTesterRunner {
     if (!ApiTesterRunner.folderPath) {
       return [];
     }
-    return apitester.getJsonTestCasesFromFolder(ApiTesterRunner.folderPath, [
+    var testCases = apitester.getJsonTestCasesFromFolder(ApiTesterRunner.folderPath, [
       ".test.json",
       ".apitester",
     ]);
+
+    return testCases;
+  }
+
+  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  private async runTestCases(webview: Webview, testCaseDelay: number = 1000) {
+    try {
+      const testCases = this.getTestCases();
+      const multiTestCaseResult = await apitester.runTestCases(testCases, async (cd) => {
+        if (cd.type !== "after") {
+          return;
+        }
+        await this.delay(testCaseDelay);
+        webview.postMessage({
+          type: "runner-command",
+          command: "testCasesCallback",
+          value: cd,
+        });
+        console.log("callback", cd);
+      });
+
+      webview.postMessage({
+        type: "runner-command",
+        command: "testCasesResult",
+        value: multiTestCaseResult,
+      });
+    } catch (e) {
+      console.error("ApiTesterRunner.runTestCases", e);
+    }
   }
 }

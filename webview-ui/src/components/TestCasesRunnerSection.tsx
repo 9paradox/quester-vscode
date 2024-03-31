@@ -1,5 +1,11 @@
-import { Avatar, Box, Button, Card, Flex, Group, Loader, Stack, Text } from "@mantine/core";
-import { IconCircleX, IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
+import { Avatar, Box, Button, Card, Center, Flex, Group, Loader, Stack, Text } from "@mantine/core";
+import {
+  IconAlertTriangle,
+  IconCircleX,
+  IconFlask,
+  IconPlayerPlayFilled,
+  IconPlayerStopFilled,
+} from "@tabler/icons-react";
 import useStyles from "../CustomStyles";
 import { TestCaseItem } from "../Types";
 import { IconCircleCheck } from "@tabler/icons-react";
@@ -9,7 +15,16 @@ interface TestCasesRunnerSectionProps {}
 
 function TestCasesRunnerSection({}: TestCasesRunnerSectionProps) {
   const { classes } = useStyles();
-  const { testCases, selectTestCase } = useTestCases();
+  const {
+    folderPath,
+    testCases,
+    selectTestCase,
+    isTestRunning,
+    isTestCompleted,
+    runTest,
+    stopTest,
+    closeTest,
+  } = useTestCases();
 
   return (
     <>
@@ -18,23 +33,33 @@ function TestCasesRunnerSection({}: TestCasesRunnerSectionProps) {
           <Group position="apart">
             <Flex direction={"column"}>
               <Text fw={500}>TestCases</Text>
-              <Text color="dimmed">Select test case to run</Text>
+              <Text color="dimmed">{folderPath}</Text>
             </Flex>
             <Group>
-              <Button
-                variant="light"
-                leftIcon={<IconPlayerPlayFilled size={14} />}
-                color="green"
-                onClick={() => {}}>
-                Run
-              </Button>
-              <Button
-                variant="light"
-                leftIcon={<IconPlayerStopFilled size={14} />}
-                color="red"
-                onClick={() => {}}>
-                Stop
-              </Button>
+              {!isTestRunning && !isTestCompleted && (
+                <Button
+                  variant="light"
+                  leftIcon={<IconPlayerPlayFilled size={14} />}
+                  color="green"
+                  disabled={!testCases || testCases.length === 0}
+                  onClick={runTest}>
+                  Run
+                </Button>
+              )}
+              {isTestRunning && !isTestCompleted && (
+                <Button
+                  variant="light"
+                  leftIcon={<IconPlayerStopFilled size={14} />}
+                  color="red"
+                  onClick={stopTest}>
+                  Stop
+                </Button>
+              )}
+              {!isTestRunning && isTestCompleted && (
+                <Button variant="light" onClick={closeTest}>
+                  Close
+                </Button>
+              )}
             </Group>
           </Group>
         </Card.Section>
@@ -47,6 +72,7 @@ function TestCasesRunnerSection({}: TestCasesRunnerSectionProps) {
                 onCardClick={() => selectTestCase(testCase)}
               />
             ))}
+          {(!testCases || testCases.length === 0) && <NoTestCases />}
         </Box>
       </Card>
     </>
@@ -108,6 +134,25 @@ function TestCaseStatus({ completed, success }: TestCaseStatusProp) {
   if (completed && success == false) {
     return <IconCircleX color="red" size="1rem" />;
   }
+  return <IconFlask color="gray" size="1rem" />;
+}
+
+function NoTestCases() {
+  return (
+    <Center
+      h="calc(100vh - 500px)"
+      sx={() => ({
+        margin: "20px",
+        padding: "20px",
+      })}>
+      <Stack align="center">
+        <IconAlertTriangle color="gray" size={40} />
+        <Text size="sm" color="dimmed" inline mt={7}>
+          No Test-Cases found in the selected folder
+        </Text>
+      </Stack>
+    </Center>
+  );
 }
 
 export default TestCasesRunnerSection;
