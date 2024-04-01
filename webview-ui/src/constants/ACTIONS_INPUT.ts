@@ -163,6 +163,20 @@ export const ACTIONS_INPUT: Dictionary<ActionInput> = {
     inputDataAdvance: CloneObject(AxiosRequestConfigType),
     inputDataRaw: CloneObject(RawOptions),
   },
+  inputData: {
+    inputDataSimple: [
+      {
+        label: "data",
+        description: "json input data for next step",
+        type: "object",
+        element: "json",
+        value: "",
+        required: true,
+      },
+    ],
+    inputDataAdvance: null,
+    inputDataRaw: null,
+  },
   pickData: {
     inputDataSimple: [
       {

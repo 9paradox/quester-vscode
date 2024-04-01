@@ -24,6 +24,13 @@ var actions: Action[] = [
   },
   {
     index: 0,
+    name: "inputData",
+    type: "ACTION",
+    color: "blue",
+    description: "Holds input data for next step.",
+  },
+  {
+    index: 0,
     name: "pickData",
     type: "ACTION",
     color: "blue",
