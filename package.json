@@ -2,7 +2,7 @@
   "name": "quester-vscode",
   "displayName": "Quester - Apitester",
   "description": "API testing for vscode. Test all you REST-API flow with drag and drop interface. Build and test API test-cases easily.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "9paradox",
   "author": "Akshay Gaonkar (9paradox)",
   "license": "MIT",
