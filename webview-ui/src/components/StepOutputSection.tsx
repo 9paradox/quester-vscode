@@ -1,4 +1,15 @@
-import { Card, ScrollArea, Text, Stack, Center, Group, Textarea, TextInput } from "@mantine/core";
+import {
+  Card,
+  ScrollArea,
+  Text,
+  Stack,
+  Center,
+  Group,
+  Textarea,
+  TextInput,
+  Divider,
+  Accordion,
+} from "@mantine/core";
 import { useSteps } from "../Store";
 import { IconClick } from "@tabler/icons-react";
 import ReactJson from "@microlink/react-json-view";
@@ -62,71 +73,103 @@ function StepOutputSection() {
         })}>
         {!selectedStep && <NoStepSelected />}
         {selectedStep && selectedStepResult && (
-          <>
-            <ReactJson
-              src={selectedStepResult?.result?.step?.timeTaken}
-              theme="railscasts"
-              collapsed={1}
-              displayDataTypes={false}
-              displayObjectSize={false}
-              enableClipboard={false}
-              name="timeTaken"
-              style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
-            />
-            {path && (
-              <TextInput
-                readOnly={true}
-                label="Selected Path"
-                value={path}
-                style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
-              />
+          <Accordion
+            chevronPosition="right"
+            variant="contained"
+            multiple
+            defaultValue={["timeTaken", "outputData", "outputDataString", "error"]}>
+            {selectedStepResult?.result?.step?.timeTaken && (
+              <Accordion.Item value="timeTaken">
+                <Accordion.Control>Time Taken</Accordion.Control>
+                <Accordion.Panel>
+                  <Group p={8}>
+                    <div>
+                      <Text>{selectedStepResult?.result?.step?.timeTaken?.s}</Text>
+                      <Text fz="xs" c="dimmed">
+                        in seconds
+                      </Text>
+                    </div>
+                    <Divider orientation="vertical" />
+                    <div>
+                      <Text>{selectedStepResult?.result?.step?.timeTaken?.ms}</Text>
+                      <Text fz="xs" c="dimmed">
+                        in milliseconds
+                      </Text>
+                    </div>
+                  </Group>
+                </Accordion.Panel>
+              </Accordion.Item>
             )}
             {selectedStepResult?.result?.step?.outputData instanceof Object && (
-              <ReactJson
-                src={selectedStepResult?.result?.step?.outputData}
-                theme="railscasts"
-                collapsed={1}
-                displayDataTypes={false}
-                displayObjectSize={false}
-                enableClipboard={false}
-                name="outputData"
-                onSelect={(s) => {
-                  console.log(s);
-                  if (s.namespace) {
-                    const path = getPropertyPath(s.namespace, s.name);
-                    if (path) {
-                      setPath(path);
-                    }
-                  }
-                }}
-                style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
-              />
+              <Accordion.Item value="outputData">
+                <Accordion.Control>Output Data</Accordion.Control>
+                <Accordion.Panel>
+                  {path && (
+                    <TextInput
+                      size="xs"
+                      readOnly={true}
+                      label="Selected Path"
+                      value={path}
+                      style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+                    />
+                  )}
+                  <ReactJson
+                    src={selectedStepResult?.result?.step?.outputData}
+                    theme="railscasts"
+                    collapsed={1}
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                    enableClipboard={false}
+                    name="outputData"
+                    onSelect={(s) => {
+                      console.log(s);
+                      if (s.namespace) {
+                        const path = getPropertyPath(s.namespace, s.name);
+                        if (path) {
+                          setPath(path);
+                        }
+                      }
+                    }}
+                    style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
             )}
 
             {typeof selectedStepResult?.result?.step?.outputData == "string" && (
-              <Textarea
-                autosize={true}
-                minRows={8}
-                readOnly={true}
-                label="outputData"
-                value={selectedStepResult?.result?.step?.outputData}
-                style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
-              />
+              <Accordion.Item value="outputDataString">
+                <Accordion.Control>Output Data</Accordion.Control>
+                <Accordion.Panel>
+                  <Textarea
+                    autosize={true}
+                    minRows={8}
+                    readOnly={true}
+                    label="outputData"
+                    value={selectedStepResult?.result?.step?.outputData}
+                    style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
             )}
 
             {selectedStepResult?.testCaseError && (
-              <ReactJson
-                src={selectedStepResult?.testCaseError}
-                theme="railscasts"
-                collapsed={1}
-                displayDataTypes={false}
-                displayObjectSize={false}
-                enableClipboard={false}
-                name="error"
-                style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
-              />
+              <Accordion.Item value="error">
+                <Accordion.Control>Error</Accordion.Control>
+                <Accordion.Panel>
+                  <ReactJson
+                    src={selectedStepResult?.testCaseError}
+                    theme="railscasts"
+                    collapsed={1}
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                    enableClipboard={false}
+                    name="error"
+                    style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
             )}
-          </>
+          </Accordion>
         )}
       </ScrollArea>
     </Card>
