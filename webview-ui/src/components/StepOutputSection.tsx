@@ -9,9 +9,10 @@ import {
   TextInput,
   Divider,
   Accordion,
+  Alert,
 } from "@mantine/core";
 import { useSteps } from "../Store";
-import { IconClick } from "@tabler/icons-react";
+import { IconClick, IconInfoCircle } from "@tabler/icons-react";
 import ReactJson from "@microlink/react-json-view";
 import { useEffect, useState } from "react";
 
@@ -156,16 +157,13 @@ function StepOutputSection() {
               <Accordion.Item value="error">
                 <Accordion.Control>Error</Accordion.Control>
                 <Accordion.Panel>
-                  <ReactJson
-                    src={selectedStepResult?.testCaseError}
-                    theme="railscasts"
-                    collapsed={1}
-                    displayDataTypes={false}
-                    displayObjectSize={false}
-                    enableClipboard={false}
-                    name="error"
-                    style={{ marginBottom: "8px", padding: "6px", borderRadius: "4px" }}
-                  />
+                  <Alert
+                    variant="light"
+                    color="red"
+                    title={selectedStepResult?.testCaseError?.title}
+                    icon={<IconInfoCircle />}>
+                    {selectedStepResult?.testCaseError?.message}
+                  </Alert>
                 </Accordion.Panel>
               </Accordion.Item>
             )}
