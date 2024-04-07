@@ -83,21 +83,7 @@ function StepOutputSection() {
               <Accordion.Item value="timeTaken">
                 <Accordion.Control>Time Taken</Accordion.Control>
                 <Accordion.Panel>
-                  <Group p={8}>
-                    <div>
-                      <Text>{selectedStepResult?.result?.step?.timeTaken?.s}</Text>
-                      <Text fz="xs" c="dimmed">
-                        in seconds
-                      </Text>
-                    </div>
-                    <Divider orientation="vertical" />
-                    <div>
-                      <Text>{selectedStepResult?.result?.step?.timeTaken?.ms}</Text>
-                      <Text fz="xs" c="dimmed">
-                        in milliseconds
-                      </Text>
-                    </div>
-                  </Group>
+                  <TimeTakenOutput data={selectedStepResult?.result?.step?.timeTaken} />
                 </Accordion.Panel>
               </Accordion.Item>
             )}
@@ -189,6 +175,26 @@ function NoStepSelected() {
         </Text>
       </Stack>
     </Center>
+  );
+}
+
+function TimeTakenOutput({ data }: { data: { ms: number; s: number } | undefined }) {
+  return (
+    <Group p={8}>
+      <div>
+        <Text>{data?.s}</Text>
+        <Text fz="xs" c="dimmed">
+          in seconds
+        </Text>
+      </div>
+      <Divider orientation="vertical" />
+      <div>
+        <Text>{data?.ms}</Text>
+        <Text fz="xs" c="dimmed">
+          in milliseconds
+        </Text>
+      </div>
+    </Group>
   );
 }
 
