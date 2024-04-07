@@ -21,6 +21,12 @@ export interface StepItem extends Step {
   success?: boolean;
 }
 
+export interface StepResultItem {
+  name: string;
+  result: any;
+  testCaseError?: TestCaseError;
+}
+
 export interface TestCaseItem {
   title: string;
   filePath: string;

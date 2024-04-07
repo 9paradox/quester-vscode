@@ -1,21 +1,46 @@
 import { Draggable, Droppable } from "@hello-pangea/dnd";
-import { Badge, Card, Group, Input, Text, Center, Stack, Box } from "@mantine/core";
+import { Badge, Card, Group, Input, Text, Center, Stack, Box, Button } from "@mantine/core";
 import { IconMoodEmpty, IconSearch } from "@tabler/icons-react";
 import useStyles from "../CustomStyles";
 import { ActionsStore } from "../Store";
 import { useAtom } from "jotai";
 import { DragList } from "../Types";
 import { useState } from "react";
+import { ResultsList } from "./ResultsList";
 
 function ActionSection() {
+  const [activeTab, setActiveTab] = useState<"actionsTab" | "resultsTab">("actionsTab");
+  return (
+    <Card shadow="none" withBorder radius="md" h="calc(100vh - 40px)" p="md">
+      <Card.Section p="lg">
+        <Button.Group>
+          <Button
+            variant={activeTab === "actionsTab" ? "light" : "subtle"}
+            onClick={() => {
+              setActiveTab("actionsTab");
+            }}>
+            Actions
+          </Button>
+          <Button
+            variant={activeTab === "resultsTab" ? "light" : "subtle"}
+            onClick={() => {
+              setActiveTab("resultsTab");
+            }}>
+            Results
+          </Button>
+        </Button.Group>
+      </Card.Section>
+      {activeTab === "actionsTab" ? <ActionsList /> : <ResultsList />}
+    </Card>
+  );
+}
+
+function ActionsList() {
   const { classes } = useStyles();
   const [actions] = useAtom(ActionsStore);
   const [searchTerm, setSearchTerm] = useState("");
   return (
-    <Card shadow="none" withBorder radius="md" h="calc(100vh - 40px)" p="md">
-      <Card.Section p="lg">
-        <Text fw={500}>Actions</Text>
-      </Card.Section>
+    <>
       <Input
         icon={<IconSearch size={16} />}
         radius="md"
@@ -70,7 +95,7 @@ function ActionSection() {
           </Box>
         )}
       </Droppable>
-    </Card>
+    </>
   );
 }
 
@@ -110,7 +135,7 @@ function ActionCard({ name, description, type, color, index }: ActionCardProps) 
   );
 }
 
-function NoActions() {
+export function NoActions() {
   return (
     <Center
       h="calc(100vh - 600px)"

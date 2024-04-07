@@ -16,7 +16,7 @@ import { IconClick, IconInfoCircle } from "@tabler/icons-react";
 import ReactJson from "@microlink/react-json-view";
 import { useEffect, useState } from "react";
 
-function getPropertyPath(namespaces: Array<string | null>, finalNamespace?: string | null): string {
+export function getPropertyPath(namespaces: Array<string | null>, finalNamespace?: string | null): string {
   if (namespaces.length === 0 && finalNamespace === null) {
     return "";
   }
@@ -160,7 +160,7 @@ function StepOutputSection() {
   );
 }
 
-function NoStepSelected() {
+export function NoStepSelected() {
   return (
     <Center
       h="calc(100vh - 500px)"
@@ -178,7 +178,7 @@ function NoStepSelected() {
   );
 }
 
-function TimeTakenOutput({ data }: { data: { ms: number; s: number } | undefined }) {
+export function TimeTakenOutput({ data }: { data: { ms: number; s: number } | undefined }) {
   return (
     <Group p={8}>
       <div>

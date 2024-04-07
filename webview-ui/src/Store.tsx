@@ -4,7 +4,7 @@ import {
   ActionInputType,
   Field,
   StepItem,
-  TestCaseError,
+  StepResultItem,
   TestCaseOptions,
   ValueType,
 } from "./Types";
@@ -21,7 +21,7 @@ export const ActionsStore = atom((get) => get(actions));
 
 const StepsStore = atom<StepItem[]>([]);
 
-const StepResultStore = atom<{ name: string; result: any; testCaseError?: TestCaseError }[]>([]);
+const StepResultStore = atom<StepResultItem[]>([]);
 
 const IsTestRunningStore = atom<boolean>(false);
 const IsTestCompletedStore = atom<boolean>(false);
@@ -102,9 +102,11 @@ export const useSteps = () => {
 
   function stopTest() {
     if (!isTestRunning) return;
-    setIsTestRunning(false);
-    setStepResults([]);
+    resetTest();
+  }
 
+  function resetTest() {
+    setIsTestRunning(false);
     const newSteps = steps.map((s, i) => {
       s.completed = undefined;
       s.success = undefined;

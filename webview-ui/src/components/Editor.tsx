@@ -40,7 +40,7 @@ export function Editor() {
         <DragDropContext onDragEnd={onDragEnd}>
           <Grid grow justify="center">
             {!isTestRunning && (
-              <Grid.Col span={1} style={{ minHeight: rem(80) }}>
+              <Grid.Col span={2} style={{ minHeight: rem(80) }}>
                 <ActionSection />
               </Grid.Col>
             )}
