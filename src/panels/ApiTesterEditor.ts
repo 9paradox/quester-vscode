@@ -20,7 +20,12 @@ export class ApiTesterEditor implements vscode.CustomTextEditorProvider {
     const provider = new ApiTesterEditor(context);
     const providerRegistration = vscode.window.registerCustomEditorProvider(
       ApiTesterEditor.viewType,
-      provider
+      provider,
+      {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+      }
     );
     return providerRegistration;
   }
