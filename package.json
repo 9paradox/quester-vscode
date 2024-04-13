@@ -44,6 +44,11 @@
           "when": "explorerResourceIsFolder",
           "command": "quester.apitesterRunner.open",
           "alt": "quester.apitesterRunner.open"
+        },
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "quester.apitesterEditor.new",
+          "alt": "quester.apitesterEditor.new"
         }
       ]
     }
